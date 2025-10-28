@@ -1,11 +1,18 @@
 # 📊 RPE Tracker: Plataforma de Gestión de Entrenamiento para Entrenadores (MVP)
 
 
+
 ## 🚀 Acerca del Proyecto
 
 **RPE Tracker** es un **Producto Mínimo Viable (MVP)** diseñado para simplificar la creación y gestión de planes de entrenamiento para entrenadores, con un enfoque particular en el seguimiento y la integración del **RPE (Ratio de Esfuerzo Percibido)**. Nuestro objetivo principal es proporcionar una interfaz intuitiva donde los entrenadores puedan cargar atletas, diseñar planes de entrenamiento personalizados con métricas de RPE y asignarlos eficientemente, ayudándolos a optimizar su trabajo y el rendimiento de sus deportistas.
 
 Esta aplicación está construida pensando en la **eficiencia y la claridad**, permitiendo a los entrenadores centrarse en lo que mejor saben hacer: ¡entrenar! Para la gestión de datos, estamos utilizando **Supabase**, una alternativa de código abierto a Firebase que nos proporciona una base de datos potente y funcionalidades de backend en tiempo real.
+
+## 🌐 Demo Online
+
+¡Prueba el prototipo en vivo! Puedes acceder a la versión actual desplegada en Netlify aquí:
+
+[http://entrenamiento-app2025.netlify.app/](http://entrenamiento-app2025.netlify.app/)
 
 ## ✨ Características (MVP)
 
@@ -19,7 +26,6 @@ Esta aplicación está construida pensando en la **eficiencia y la claridad**, p
 
 ![RPE Tracker App Screenshot Light Theme](https://placehold.co/800x450/D4C7B4/3A3A3A?text=RPE+Tracker+Dashboard+Light+Theme)
 ![RPE Tracker App Screenshot Dark Theme](https://placehold.co/800x450/1A1A2E/E0E0E0?text=RPE+Tracker+Dashboard+Dark+Theme)
-
 
 El diseño de RPE Tracker se basa en el framework **Bootstrap 5.3**, garantizando una interfaz moderna, robusta y adaptable. Hemos trabajado en una paleta de colores que transmite **profesionalismo, energía y confianza**, con soporte completo para **temas claro y oscuro**.
 
@@ -73,7 +79,6 @@ Para configurar el proyecto localmente:
 
 Este proyecto está bajo la Licencia MIT. Consulta el archivo `LICENSE` para más detalles.
 
-## 📧 Contacto
 
 
 ---
