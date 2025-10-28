@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <rect width="200" height="200" fill="#EAF1E6"/>
+  <g fill="#3A3A3A" font-family="Inter, Arial, sans-serif" text-anchor="middle">
+    <text x="50%" y="50%" font-size="18">Producto</text>
+    <text x="50%" y="68%" font-size="12">200×200</text>
+  </g>
+</svg>

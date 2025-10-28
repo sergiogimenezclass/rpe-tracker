@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPE Tracker Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Definición de variables de color inspiradas en el mockup */
+        :root {
+            --bs-body-font-family: 'Inter', sans-serif;
+            --rpe-bg-dark: #212529;
+            --rpe-bg-light: #2c3238;
+            --rpe-border-color: #495057;
+            --rpe-primary: #fd7e14;
+            --rpe-text-primary: #f8f9fa;
+            --rpe-text-secondary: #adb5bd;
+        }
+
+        /* Estilos generales del cuerpo */
+        body {
+            background-color: var(--rpe-bg-dark);
+            color: var(--rpe-text-primary);
+            font-size: 0.9rem;
+        }
+
+        /* Contenedor principal para el layout de dos columnas */
+        .main-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        /* Barra de navegación superior */
+        .top-navbar {
+            grid-column: 1 / 3;
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--rpe-border-color);
+        }
+        .top-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--rpe-text-primary);
+        }
+        .top-navbar .navbar-brand .bi-bar-chart-steps {
+            transform: scaleX(-1);
+        }
+        .top-navbar .user-profile {
+            color: var(--rpe-text-secondary);
+        }
+        .top-navbar .user-profile a {
+            color: var(--rpe-text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .top-navbar .user-profile a:hover {
+            color: var(--rpe-text-primary);
+        }
+        .top-navbar .user-profile .bi {
+            font-size: 1.25rem;
+        }
+        .top-navbar .vr {
+            color: var(--rpe-border-color);
+            margin: 0 1rem;
+        }
+
+        /* Barra lateral de navegación */
+        .sidebar {
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--rpe-border-color);
+            height: 100%;
+            position: relative;
+        }
+        .sidebar .nav {
+            padding-bottom: 5rem; /* Espacio para el footer */
+        }
+        .sidebar .nav-link {
+            color: var(--rpe-text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #3a4149;
+            color: var(--rpe-text-primary);
+        }
+        .sidebar .nav-link.active {
+            background-color: var(--rpe-primary);
+            color: white;
+            font-weight: 600;
+        }
+        .sidebar .footer {
+            margin-top: auto;
+            font-size: 0.8rem;
+            color: var(--rpe-text-secondary);
+            padding-top: 1rem;
+            border-top: 1px solid var(--rpe-border-color);
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+        }
+
+        /* Área de contenido principal */
+        .main-content {
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            border: 1px solid var(--rpe-border-color);
+        }
+
+        /* Tarjetas de estadísticas */
+        .stat-card {
+            background-color: var(--rpe-bg-dark);
+            border: 1px solid var(--rpe-border-color);
+            border-radius: 0.375rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+        }
+        .stat-card .value {
+            font-weight: 700;
+            color: var(--rpe-text-primary);
+        }
+        .stat-card .label {
+            color: var(--rpe-text-secondary);
+        }
+
+        h5 {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--rpe-text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        /* Gráficos */
+        .chart-container {
+            position: relative;
+        }
+        #donutChartContainer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 180px; /* Altura fija para el contenedor */
+            width: 180px; /* Ancho fijo para el contenedor */
+            margin: 0 auto;
+        }
+        .donut-center-text {
+            position: absolute;
+            text-align: center;
+            line-height: 1.2;
+            pointer-events: none; /* Para no interferir con el tooltip del gráfico */
+        }
+        .donut-center-text .main {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--rpe-primary);
+        }
+        .donut-center-text .sub {
+            font-size: 0.8rem;
+            color: var(--rpe-text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Tabla de sesiones */
+        .table {
+            --bs-table-bg: transparent;
+            --bs-table-border-color: var(--rpe-border-color);
+            --bs-table-color: var(--rpe-text-secondary);
+            --bs-table-striped-color: var(--rpe-text-primary);
+            --bs-table-striped-bg: #2c3238; /* Ligeramente diferente para el contraste */
+        }
+        .table thead th {
+            color: var(--rpe-text-primary);
+            font-weight: 600;
+            border-bottom-width: 1px;
+        }
+        .table td {
+             vertical-align: middle;
+        }
+        .table .badge {
+            font-weight: 500;
+        }
+        
+        /* Botones de acción */
+        .btn-custom-primary {
+            background-color: var(--rpe-primary);
+            border-color: var(--rpe-primary);
+            color: white;
+            font-weight: 600;
+        }
+        .btn-custom-primary:hover {
+            background-color: #d66a0f;
+            border-color: #d66a0f;
+            color: white;
+        }
+        .btn-custom-secondary {
+            background-color: var(--rpe-bg-dark);
+            border-color: var(--rpe-border-color);
+            color: var(--rpe-text-primary);
+            font-weight: 600;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #3a4149;
+            border-color: var(--rpe-border-color);
+            color: var(--rpe-text-primary);
+        }
+        
+        /* Adaptación para pantallas pequeñas */
+        /* Estilos para el botón del menú */
+        .navbar-toggler {
+            padding: 0;
+            color: var(--rpe-text-primary);
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Overlay para el menú móvil */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1044;
+        }
+        
+        .sidebar-backdrop.show {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                min-height: 100vh;
+            }
+            .top-navbar {
+                grid-column: 1;
+                z-index: 1046;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 260px;
+                height: 100vh;
+                z-index: 1045;
+                padding-top: 5.5rem !important;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                background-color: var(--rpe-bg-light);
+                display: flex;
+                flex-direction: column;
+            }
+            .sidebar .nav {
+                flex: 1 1 auto;
+                margin-bottom: 1rem;
+            }
+        .sidebar .footer {
+            flex-shrink: 0;
+            padding-top: 1rem;
+            border-top: 1px solid var(--rpe-border-color);
+            margin-top: auto;
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+        }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar.collapsing {
+                transition: transform 0.3s ease-in-out;
+                transform: translateX(-100%);
+            }
+            .main-content {
+                grid-row: 2;
+            }
+        }
+        @media (max-width: 768px) {
+             .main-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+             .sidebar {
+                padding: 1rem;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+            .top-navbar {
+                padding: 0.75rem 1rem;
+            }
+            .top-navbar .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .top-navbar .d-none.d-md-inline {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+        <nav class="top-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler d-lg-none border-0 px-0 me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list text-light fs-4"></i>
+                </button>
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-bar-chart-steps"></i> RPE TRACKER
+                </a>
+            </div>
+            <div class="user-profile d-flex align-items-center">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <span class="d-none d-md-inline">Perfil / Usuario</span>
+                <div class="vr d-none d-md-inline"></div>
+                <a href="#" class="me-3"><i class="bi bi-gear-fill fs-5"></i></a>
+                <div class="vr d-none d-md-inline"></div>
+                <a href="../index.html" class="ms-3 text-danger" title="Cerrar Sesión">
+                    <i class="bi bi-power fs-5"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Backdrop para móvil -->
+        <div class="sidebar-backdrop" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"></div>
+        
+        <!-- BARRA LATERAL -->
+        <aside class="sidebar collapse d-lg-block" id="sidebarMenu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="./atletas.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./atletas.html">Atletas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="./planes.html">Planes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./detalle.html">Detalle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./feedback-rpe.html">Feedback</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./configuracion.html">Configuración</a>
+                </li>
+            </ul>
+            <div class="footer">
+                &copy; 2025 RPE Tracker <span class="ms-2">v0.1.0</span>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <!-- Encabezado de atleta -->
+            <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap">
+                <div>
+                    <p class="mb-0 text-white"><strong>Atleta:</strong> Mariana Torres</p>
+                    <p class="mb-0 text-secondary"><strong>Nivel:</strong> Crossfit Avanzado</p>
+                    <p class="mb-0 text-secondary"><strong>Última sesión:</strong> 19/10/2025 - RPE promedio, 7.8</p>
+                </div>
+                <div class="mt-2 mt-md-0">
+                    <p class="mb-0 text-secondary"><i class="bi bi-person"></i> <strong>Entrenador:</strong> L. Pérez</p>
+                </div>
+            </div>
+
+            <!-- Tarjetas de estadísticas -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <span class="value">7.8</span> <span class="label">RPE Promedio</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <span class="value">52 min</span> <span class="label">Avg. Sesión</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <span class="value">0 kg</span> <span class="label">Volumen</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <span class="value">4/sem</span> <span class="label">Frecuencia</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sección de métricas y gráficos -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-8">
+                    <h5 class="mb-3">MÉTRICAS DESTACADAS</h5>
+                    <div class="chart-container" style="height: 200px;">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div id="donutChartContainer" class="chart-container">
+                        <canvas id="donutChart"></canvas>
+                        <div class="donut-center-text">
+                            <div class="main">9</div>
+                            <div class="sub">Sesiones Recientes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de sesiones recientes -->
+            <h5 class="mb-3">SESIONES RECIENTES</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Fecha</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">RPE</th>
+                            <th scope="col">Volumen</th>
+                            <th scope="col">Durac.</th>
+                            <th scope="col">Comentarios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>19/10/25</td>
+                            <td>HIIT</td>
+                            <td><span class="badge text-bg-warning">8</span></td>
+                            <td>-</td>
+                            <td>45 min</td>
+                            <td>Intenso pero bien</td>
+                        </tr>
+                        <tr>
+                            <td>18/10/25</td>
+                            <td>Fuerza</td>
+                            <td><span class="badge text-bg-danger">9</span></td>
+                            <td>4500 kg</td>
+                            <td>60 min</td>
+                            <td>PR en sentadilla</td>
+                        </tr>
+                        <tr>
+                            <td>17/10/25</td>
+                            <td>Técnica</td>
+                            <td><span class="badge" style="background-color: #28a745;">4</span></td>
+                            <td>1200 kg</td>
+                            <td>50 min</td>
+                            <td>Enfocado en clean</td>
+                        </tr>
+                        <tr>
+                            <td>16/10/25</td>
+                            <td>Rest Day</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>30 min</td>
+                            <td>Descanso activo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <hr style="border-color: var(--rpe-border-color);">
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <button class="btn btn-custom-primary"><i class="bi bi-plus-lg"></i> Nueva sesión</button>
+                <button class="btn btn-custom-secondary"><i class="bi bi-graph-up"></i> Ver progreso</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS y Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Manejador del menú móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const backdrop = document.querySelector('.sidebar-backdrop');
+            const sidebar = document.getElementById('sidebarMenu');
+            
+            // Mostrar/ocultar backdrop cuando el menú se abre/cierra
+            sidebar.addEventListener('show.bs.collapse', function () {
+                backdrop.classList.add('show');
+            });
+            
+            sidebar.addEventListener('hide.bs.collapse', function () {
+                backdrop.classList.remove('show');
+            });
+            
+            // Cerrar menú al hacer click en un enlace (en móvil)
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        bootstrap.Collapse.getInstance(sidebar).hide();
+                    }
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--rpe-primary').trim();
+            const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--rpe-border-color').trim();
+            const textColor = getComputedStyle(document.documentElement).getPropertyValue('--rpe-text-secondary').trim();
+
+            // Configuración del gráfico de líneas
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            const lineChart = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10'],
+                    datasets: [{
+                        label: 'RPE Promedio',
+                        data: [6, 7, 5, 8, 7, 9, 6, 8, 7, 8],
+                        borderColor: primaryColor,
+                        backgroundColor: 'transparent',
+                        pointBackgroundColor: primaryColor,
+                        pointBorderColor: primaryColor,
+                        pointRadius: 4,
+                        tension: 0.4 // Hace la línea más suave
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#000',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                color: textColor,
+                                stepSize: 2
+                            },
+                            grid: {
+                                color: borderColor
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: textColor
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Configuración del gráfico de dona (donut)
+            const donutCtx = document.getElementById('donutChart').getContext('2d');
+            const donutChart = new Chart(donutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Sesiones Completadas', 'Sesiones Restantes'],
+                    datasets: [{
+                        data: [9, 3], // 9 completadas de 12 totales por ejemplo
+                        backgroundColor: [
+                            primaryColor,
+                            borderColor 
+                        ],
+                        borderWidth: 0,
+                        cutout: '75%' // Ajusta el grosor del anillo
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                             enabled: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

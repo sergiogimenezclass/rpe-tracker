@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Té - Green Tea Selection</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Base Corporate Colors */
+            --primary: #003366;
+            --secondary: #FF6600;
+            --success: #28A745;
+
+            /* Typography */
+            --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+            --font-family-headings: 'Roboto', sans-serif;
+            
+            /* Theme Colors - Light */
+            --theme-bg-primary-light: #FFFFFF;
+            --theme-bg-secondary-light: #F8F9FA;
+            --theme-text-primary-light: #333333;
+            --theme-text-secondary-light: #6C757D;
+            --theme-border-light: #DEE2E6;
+            --theme-card-bg-light: #FFFFFF;
+            --theme-card-border-light: #E9ECEF;
+            --theme-btn-primary-light: #003366;
+            --theme-btn-secondary-light: #FF6600;
+            --theme-overlay-bg-light: rgba(255, 255, 255, 0.85);
+
+            /* Theme Colors - Dark */
+            --theme-bg-primary-dark: #1A1A2E;
+            --theme-bg-secondary-dark: #2A2A4A;
+            --theme-text-primary-dark: #E0E0E0;
+            --theme-text-secondary-dark: #AAAAAA;
+            --theme-border-dark: #3F3F5F;
+            --theme-card-bg-dark: #2A2A4A;
+            --theme-card-border-dark: #3F3F5F;
+            --theme-btn-primary-dark: #0F4C75;
+            --theme-btn-secondary-dark: #FF6600;
+            --theme-overlay-bg-dark: rgba(26, 26, 46, 0.85);
+
+            /* Active Theme Variables */
+            --theme-bg-primary: var(--theme-bg-primary-light);
+            --theme-bg-secondary: var(--theme-bg-secondary-light);
+            --theme-text-primary: var(--theme-text-primary-light);
+            --theme-text-secondary: var(--theme-text-secondary-light);
+            --theme-border: var(--theme-border-light);
+            --theme-card-bg: var(--theme-card-bg-light);
+            --theme-card-border: var(--theme-card-border-light);
+            --theme-btn-primary: var(--theme-btn-primary-light);
+            --theme-btn-secondary: var(--theme-btn-secondary-light);
+            --theme-overlay-bg: var(--theme-overlay-bg-light);
+        }
+
+        /* Dark theme class */
+        :root[data-bs-theme="dark"] {
+            --theme-bg-primary: var(--theme-bg-primary-dark);
+            --theme-bg-secondary: var(--theme-bg-secondary-dark);
+            --theme-text-primary: var(--theme-text-primary-dark);
+            --theme-text-secondary: var(--theme-text-secondary-dark);
+            --theme-border: var(--theme-border-dark);
+            --theme-card-bg: var(--theme-card-bg-dark);
+            --theme-card-border: var(--theme-card-border-dark);
+            --theme-btn-primary: var(--theme-btn-primary-dark);
+            --theme-btn-secondary: var(--theme-btn-secondary-dark);
+            --theme-overlay-bg: var(--theme-overlay-bg-dark);
+            
+            /* Update Bootstrap variables */
+            --primary: var(--theme-btn-primary);
+            --secondary: var(--theme-btn-secondary);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--theme-bg-primary);
+            color: var(--theme-text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-family-headings);
+        }
+
+        /* Custom Scrollbar */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Component Styles */
+        .card {
+            background-color: var(--theme-card-bg);
+            border-color: var(--theme-card-border);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-body {
+            background-color: var(--theme-card-bg);
+            color: var(--theme-text-primary);
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
+            color: var(--theme-text-primary);
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-btn-primary);
+            color: var(--theme-text-primary);
+            box-shadow: 0 0 0 0.25rem rgba(var(--theme-btn-primary), 0.25);
+        }
+
+        .input-group-text {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
+            color: var(--theme-text-primary);
+        }
+
+        /* Background and Text Utilities */
+        .bg-light {
+            background-color: var(--theme-bg-secondary) !important;
+        }
+
+        .text-secondary {
+            color: var(--theme-text-secondary) !important;
+        }
+
+        /* Navbar Components */
+        .navbar .input-group .form-control,
+        .navbar .input-group .input-group-text {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
+            color: var(--theme-text-primary);
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background-color: var(--theme-btn-primary);
+            border-color: var(--theme-btn-primary);
+            color: #FFFFFF;
+        }
+        
+        .btn-secondary {
+            background-color: var(--theme-btn-secondary);
+            border-color: var(--theme-btn-secondary);
+            color: #FFFFFF;
+        }
+
+        .btn-outline-secondary {
+            border-color: var(--theme-btn-secondary);
+            color: var(--theme-btn-secondary);
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: var(--theme-btn-secondary);
+            border-color: var(--theme-btn-secondary);
+            color: #FFFFFF;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: #FFFFFF;
+        }
+
+        .btn-light {
+            background-color: var(--theme-bg-secondary);
+            border-color: var(--theme-border);
+            color: var(--theme-text-primary);
+        }
+
+        .btn-outline-light {
+            border-color: var(--theme-border);
+            color: var(--theme-text-primary);
+        }
+
+        .btn-outline-light:hover {
+            background-color: var(--theme-bg-secondary);
+            color: var(--theme-text-primary);
+        }
+
+        /* Navigation Elements */
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: var(--theme-text-secondary);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--theme-text-secondary);
+        }
+
+        /* Banner Overlay */
+        .banner-overlay {
+            background-color: var(--theme-overlay-bg);
+        }
+
+        /* SVG Icons & Navbar Icons */
+        .theme-icon {
+            fill: currentColor;
+        }
+
+        /* Navbar Icon Buttons */
+        .nav-icon-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 50%;
+            color: #FFFFFF;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .nav-icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Light theme icon adjustments */
+        :root[data-bs-theme="light"] .navbar {
+            background-color: var(--theme-btn-primary) !important;
+        }
+
+        :root[data-bs-theme="light"] .nav-icon-btn {
+            color: #FFFFFF;
+        }
+
+        :root[data-bs-theme="light"] .nav-icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Dark theme icon adjustments */
+        :root[data-bs-theme="dark"] .navbar {
+            background-color: var(--theme-bg-secondary) !important;
+        }
+
+        :root[data-bs-theme="dark"] .nav-icon-btn {
+            color: #FFFFFF;
+        }
+
+        :root[data-bs-theme="dark"] .nav-icon-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="font-sans text-secondary-gray bg-background-light">
+
+    <!-- CABECERA y NAVEGACIÓN -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <!-- Logo -->
+                <a href="index.html" class="navbar-brand d-flex align-items-center">
+                    <svg class="me-2" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                    </svg>
+                    <span class="h5 mb-0">Tea Shop</span>
+                </a>
+
+                <!-- Botón de hamburguesa para móvil -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Menú de navegación -->
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Tienda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Suscribirse</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Acerca de</a>
+                        </li>
+                    </ul>
+
+                    <!-- Búsqueda y Cuenta -->
+                    <div class="d-flex align-items-center">
+                        <div class="input-group me-3">
+                            <span class="input-group-text border-end-0">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </span>
+                            <input type="search" class="form-control border-start-0" placeholder="Buscar producto...">
+                        </div>
+                                                    <button class="btn nav-icon-btn me-2">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </button>
+                        <!-- Theme Toggle Button -->
+                        <button class="theme-toggle btn nav-icon-btn" id="themeToggle" aria-label="Cambiar tema">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="theme-light-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="theme-dark-icon" style="display: none;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- BANNER DE CATEGORÍA -->
+    <section class="bg-light py-5">
+        <div class="container">
+            <div class="position-relative rounded overflow-hidden" style="height: 400px;">
+                <!-- Capa de color y texto -->
+                <div class="banner-overlay position-absolute top-0 start-0 end-0 bottom-0 d-flex flex-column justify-content-center p-4 p-md-5" style="z-index: 2;">
+                    <h1 class="display-4 fw-bold mb-3" style="color: var(--theme-btn-primary);">
+                        Green Tea Selection
+                    </h1>
+                    <nav class="breadcrumb mb-0" style="--bs-breadcrumb-divider: '/';">
+                        <a class="breadcrumb-item text-decoration-none" href="#" style="color: var(--theme-btn-secondary);">Tienda</a>
+                        <span class="breadcrumb-item active" style="color: var(--theme-btn-primary);">Té Verde</span>
+                    </nav>
+                </div>
+                
+                <!-- Imagen de fondo -->
+                <div class="position-absolute top-0 start-0 end-0 bottom-0 bg-opacity-70" 
+                     style="background: url('https://placehold.co/1200x400/D4C7B4/3A3A3A?text=Taza+de+T%C3%A9+Verde+con+Polvo+Matcha') center/cover no-repeat;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUERPO PRINCIPAL (Filtros, Selector y Productos) -->
+    <main class="main-content container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        
+        <!-- SECCIÓN DE SELECTORES (TOP BAR) -->
+        <div class="mb-4">
+            <div class="d-flex flex-wrap gap-3">
+                <!-- Dropdowns de la barra superior -->
+                <select id="top-filter-size" class="form-select" style="width: auto;">
+                    <option value="all">Tamaño</option>
+                    <option value="50g">50g</option>
+                    <option value="100g">100g</option>
+                    <option value="200g">200g</option>
+                </select>
+                <select id="top-filter-strength" class="form-select" style="width: auto;">
+                    <option value="all">Fuerza</option>
+                    <option value="light">Ligera</option>
+                    <option value="medium">Media</option>
+                    <option value="strong">Fuerte</option>
+                </select>
+                <!-- Botones de Categoría -->
+                <div class="btn-group">
+                    <button class="btn btn-primary">Té Verde</button>
+                    <button class="btn btn-outline-secondary">Té Negro</button>
+                    <button class="btn btn-outline-secondary">Té Blanco</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Columna de FILTROS (Sidebar) -->
+            <aside class="col-lg-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h5 mb-4">Filter</h2>
+
+                        <!-- Contenedor principal de filtros -->
+                        <div id="filter-container">
+                            <!-- Dropdowns -->
+                            <div class="mb-4">
+                                <!-- Tipo de Té -->
+                                <div class="mb-3">
+                                    <label for="filter-type" class="form-label fw-semibold">Tea type</label>
+                                    <select id="filter-type" class="form-select">
+                                        <option value="green">Green Tea</option>
+                                        <option value="black">Black Tea</option>
+                                        <option value="white">White Tea</option>
+                                        <option value="matcha">Matcha</option>
+                                        <option value="rooibos">Rooibos</option>
+                                    </select>
+                                </div>
+                                <!-- Tamaño -->
+                                <div class="mb-3">
+                                    <label for="filter-size" class="form-label fw-semibold">Size</label>
+                                    <select id="filter-size" class="form-select">
+                                        <option value="all">All Sizes</option>
+                                        <option value="50g">50g</option>
+                                        <option value="100g">100g</option>
+                                    </select>
+                                </div>
+                                <!-- Fuerza -->
+                                <div class="mb-3">
+                                    <label for="filter-strength" class="form-label fw-semibold">Strength</label>
+                                    <select id="filter-strength" class="form-select">
+                                        <option value="all">Any Strength</option>
+                                        <option value="light">Light</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="strong">Strong</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Checkboxes de Cafeína -->
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Caffeine</label>
+                                <div class="form-check">
+                                    <input type="checkbox" id="caffeine-caff" value="Caffeinated" class="form-check-input" checked>
+                                    <label class="form-check-label" for="caffeine-caff">Caffeinated</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" id="caffeine-decaff" value="Decaffeinated" class="form-check-input">
+                                    <label class="form-check-label" for="caffeine-decaff">Decaffeinated</label>
+                                </div>
+                            </div>
+
+                            <!-- Dropdown Fuente -->
+                            <div class="mb-3">
+                                <label for="filter-source" class="form-label fw-semibold">Source</label>
+                                <select id="filter-source" class="form-select">
+                                    <option value="all">All</option>
+                                    <option value="china">China</option>
+                                    <option value="india">India</option>
+                                    <option value="japan">Japan</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Grid de PRODUCTOS -->
+            <section class="col-lg-9">
+                <div id="product-grid" class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4">
+                    <!-- Los productos se insertarán aquí por JavaScript -->
+                    <div class="col-12 text-center py-5" id="loading-message">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando productos...</span>
+                        </div>
+                        <p class="mt-2">Cargando productos...</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- SECCIÓN DE MEJOR VENDIDOS (Carousel) -->
+    <section class="py-5 mt-5" style="background-color: var(--card-bg);">
+        <div class="container">
+            <h2 class="display-6 mb-3" style="color: var(--body-color);">Try our bestsellers</h2>
+            <p class="mb-4 col-md-8" style="color: var(--body-color-secondary);">
+                At our shop, we believe in the power of herbs to heal and restore. From fresh herbal teas from sources like North Africa, we offer a range of teas that are perfect for every mood and occasion.
+            </p>
+
+            <div class="position-relative">
+                <div class="row flex-nowrap overflow-auto g-4 pb-4 no-scrollbar" id="bestsellers-carousel">
+                    <!-- Tarjeta 1 (Earl Grey) -->
+                    <div class="col-10 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="width: 80px; height: 80px; background-color: var(--body-bg-secondary);">
+                                    <img src="https://placehold.co/60x60/8B4513/ffffff?text=Bergamota" alt="Earl Grey" class="rounded-circle w-100 h-100 object-fit-cover">
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Earl Gray 22</h5>
+                                    <p class="card-text text-secondary small">Bold and Fruit Taste</p>
+                                    <p class="card-text fw-bold" style="color: var(--secondary);">$9</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 2 (Té Jazmín) -->
+                    <div class="col-10 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="width: 80px; height: 80px; background-color: var(--body-bg-secondary);">
+                                    <img src="https://placehold.co/60x60/90EE90/3A3A3A?text=Flor+Jazmin" alt="Jasmine Tea" class="rounded-circle w-100 h-100 object-fit-cover">
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Jasmine Tea</h5>
+                                    <p class="card-text small" style="color: var(--body-color-secondary);">Light and Refreshing Taste</p>
+                                    <p class="card-text fw-bold" style="color: var(--secondary);">$9</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 3 (Té Menta) -->
+                    <div class="col-10 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="width: 80px; height: 80px; background-color: var(--body-bg-secondary);">
+                                    <img src="https://placehold.co/60x60/3CB371/ffffff?text=Hojas+Menta" alt="Mint Tea" class="rounded-circle w-100 h-100 object-fit-cover">
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Mint Tea</h5>
+                                    <p class="card-text small" style="color: var(--body-color-secondary);">Smooth and Digestive</p>
+                                    <p class="card-text fw-bold" style="color: var(--secondary);">$11</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 4 (Té Chai) -->
+                    <div class="col-10 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="width: 80px; height: 80px; background-color: var(--body-bg-secondary);">
+                                    <img src="https://placehold.co/60x60/CD853F/ffffff?text=Chai+Mix" alt="Chai Tea" class="rounded-circle w-100 h-100 object-fit-cover">
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">Masala Chai</h5>
+                                    <p class="card-text small" style="color: var(--body-color-secondary);">Spicy and Aromatic</p>
+                                    <p class="card-text fw-bold" style="color: var(--secondary);">$12</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 5 (Té Rooibos) -->
+                    <div class="col-10 col-md-6 col-lg-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-circle p-3 me-3" style="width: 80px; height: 80px; background-color: var(--body-bg-secondary);">
+                                    <img src="https://placehold.co/60x60/B22222/ffffff?text=Rooibos" alt="Rooibos Tea" class="rounded-circle w-100 h-100 object-fit-cover">
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-1">African Rooibos</h5>
+                                    <p class="card-text text-secondary small">Sweet and Nutty</p>
+                                    <p class="card-text fw-bold" style="color: var(--secondary);">$10</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controles del carousel -->
+                <button class="btn btn-light position-absolute top-50 start-0 translate-middle-y rounded-circle shadow-sm d-none d-md-block" 
+                        onclick="scrollCarousel(-1)" 
+                        aria-label="Producto anterior">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <button class="btn btn-light position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm d-none d-md-block" 
+                        onclick="scrollCarousel(1)" 
+                        aria-label="Siguiente producto">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white mt-5">
+        <!-- Sección de Suscripción -->
+        <div class="container py-5 border-bottom border-secondary">
+            <p class="mb-3">Let's stay in touch: Sign up to our newsletter</p>
+            <div class="row g-3">
+                <div class="col-md">
+                    <input type="email" class="form-control" placeholder="Insert your email address here">
+                </div>
+                <div class="col-md-auto">
+                    <button class="btn btn-secondary w-100">
+                        Subscribe now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Enlaces y Logo -->
+        <div class="container py-5">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-4">
+                <!-- Columna 1: Logo y Copyright -->
+                <div class="col">
+                    <a href="index.html" class="d-inline-block mb-3">
+                        <svg width="24" height="24" fill="currentColor" class="text-white" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                        </svg>
+                    </a>
+                    <p class="small text-secondary">&copy; 2023 The Tea Stop. All rights reserved.</p>
+                </div>
+
+                <!-- Columnas de Enlaces -->
+                <div class="col">
+                    <h3 class="h6 mb-3">Help</h3>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">FAQ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Privacy Policy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Terms and conditions</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3 class="h6 mb-3">Offer</h3>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Site map</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Tea of the week</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Subscriptions</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <h3 class="h6 mb-3">Contact</h3>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Customer Service</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Retail Inquiries</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-secondary px-0">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+            const lightIcon = themeToggle.querySelector('.theme-light-icon');
+            const darkIcon = themeToggle.querySelector('.theme-dark-icon');
+            
+            // Check for saved theme preference or default to 'light'
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcons(savedTheme);
+
+            // Toggle theme
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // Update theme
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons(newTheme);
+            });
+
+            // Update icons based on current theme
+            function updateThemeIcons(theme) {
+                if (theme === 'dark') {
+                    lightIcon.style.display = 'none';
+                    darkIcon.style.display = 'block';
+                } else {
+                    lightIcon.style.display = 'block';
+                    darkIcon.style.display = 'none';
+                }
+            }
+        });
+    </script>
+
+
+    <script>
+        // --- DATA MOCKUP (Simulación de la base de datos de productos) ---
+        // Productos ajustados para coincidir con la categoría "Green Tea Selection"
+        const productsData = [
+            { id: 1, name: "Green Tea (100g)", price: 13, type: "green", size: "100g", strength: "medium", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+100g" },
+            { id: 2, name: "Green Tea (50g)", price: 11, type: "green", size: "50g", strength: "light", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+50g" },
+            { id: 3, name: "Super Matcha", price: 12, type: "green", size: "100g", strength: "strong", caffeine: "Caffeinated", source: "japan", image: "https://placehold.co/200x200/779A52/ffffff?text=Polvo+Matcha" },
+            { id: 4, name: "Green Tea (200g)", price: 12, type: "green", size: "200g", strength: "medium", caffeine: "Decaffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+200g" },
+            { id: 5, name: "Green Tea (50g) Ref", price: 10, type: "green", size: "50g", strength: "light", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+50g" },
+            { id: 6, name: "Green Tea (100g) Org", price: 10, type: "green", size: "100g", strength: "medium", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+100g" },
+            { id: 7, name: "Green Tea Special", price: 12, type: "green", size: "100g", strength: "light", caffeine: "Caffeinated", source: "japan", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+Jap" },
+            { id: 8, name: "Green Tea (200g) Premium", price: 17, type: "green", size: "200g", strength: "strong", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+Premium" },
+            { id: 9, name: "Green Tea Decaf", price: 10, type: "green", size: "100g", strength: "light", caffeine: "Decaffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=Green+Tea+Decaf" },
+        ];
+
+        // --- FUNCIONES DE RENDERIZADO Y FILTRO ---
+
+        /**
+         * Crea el elemento HTML para una tarjeta de producto.
+         * @param {Object} product - Objeto de producto.
+         * @returns {string} El HTML de la tarjeta de producto.
+         */
+        function createProductCard(product) {
+            return `
+                <div class="col">
+                    <a href="producto.html?id=${product.id}" class="text-decoration-none" aria-label="Ver ${product.name}">
+                        <div class="card h-100 border-0 shadow-sm hover-shadow-lg transition-transform product-card"
+                            data-type="${product.type}" 
+                            data-size="${product.size}" 
+                            data-strength="${product.strength}" 
+                            data-caffeine="${product.caffeine}" 
+                            data-source="${product.source}"
+                        >
+                            <!-- Imagen del producto -->
+                            <div class="card-img-top bg-light" style="height: 200px;">
+                                <img src="${product.image}" alt="${product.name}" class="w-100 h-100 object-fit-cover">
+                            </div>
+
+                            <div class="card-body">
+                                <h3 class="card-title h6 text-truncate">${product.name}</h3>
+                                <p class="card-text small text-secondary">${product.name}</p>
+                                <p class="card-text fw-bold" style="color: var(--secondary);">$${product.price}</p>
+                            </div>
+
+                            <!-- Barra de progreso o indicador -->
+                            <div class="card-footer border-0 bg-transparent">
+                                <div class="progress" style="height: 4px;">
+                                    <div class="progress-bar" 
+                                         role="progressbar" 
+                                         style="width: ${product.strength === 'light' ? '33%' : product.strength === 'medium' ? '66%' : '100%'}; background-color: var(--success);" 
+                                         aria-valuenow="${product.strength === 'light' ? '33' : product.strength === 'medium' ? '66' : '100'}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        /**
+         * Renderiza la lista de productos en el grid.
+         * @param {Array} products - Lista de productos a renderizar.
+         */
+        function renderProducts(products) {
+            const grid = document.getElementById('product-grid');
+            const loading = document.getElementById('loading-message');
+
+            if (loading) {
+                loading.remove();
+            }
+
+            if (products.length === 0) {
+                grid.innerHTML = '<p class="col-span-4 text-center text-gray-500 py-10">No products matching the filters were found.</p>';
+                return;
+            }
+
+            grid.innerHTML = products.map(createProductCard).join('');
+        }
+
+        /**
+         * Aplica los filtros seleccionados a la lista de productos.
+         */
+        function applyFilters() {
+            const selectedType = document.getElementById('filter-type').value;
+            const selectedSize = document.getElementById('filter-size').value; // Nuevo filtro
+            const selectedStrength = document.getElementById('filter-strength').value;
+            const selectedSource = document.getElementById('filter-source').value;
+            
+            const caffeinatedChecked = document.getElementById('caffeine-caff').checked;
+            const decaffeinatedChecked = document.getElementById('caffeine-decaff').checked;
+
+            const filteredProducts = productsData.filter(product => {
+                // 1. Filtrar por Tipo (Aunque la página es de Té Verde, se mantiene el filtro por si se cambia la data)
+                if (selectedType !== 'all' && product.type !== selectedType) {
+                    return false;
+                }
+
+                // 2. Filtrar por Tamaño
+                if (selectedSize !== 'all' && product.size !== selectedSize) {
+                    return false;
+                }
+
+                // 3. Filtrar por Fuerza
+                if (selectedStrength !== 'all' && product.strength !== selectedStrength) {
+                    return false;
+                }
+                
+                // 4. Filtrar por Fuente
+                if (selectedSource !== 'all' && product.source !== selectedSource) {
+                    return false;
+                }
+
+                // 5. Filtrar por Cafeína (Checkboxes)
+                const isCaffeinated = product.caffeine === 'Caffeinated';
+                const isDecaffeinated = product.caffeine === 'Decaffeinated';
+                
+                // Si ambos están marcados, no filtra por cafeína (muestra todo)
+                if (caffeinatedChecked && decaffeinatedChecked) {
+                    return true;
+                } 
+                // Si solo está marcado Cafeinado
+                else if (caffeinatedChecked && !decaffeinatedChecked) {
+                    return isCaffeinated;
+                }
+                // Si solo está marcado Descafeinado
+                else if (!caffeinatedChecked && decaffeinatedChecked) {
+                    return isDecaffeinated;
+                }
+                // Si ninguno está marcado (oculta todos)
+                else {
+                    return false;
+                }
+
+            });
+
+            renderProducts(filteredProducts);
+        }
+        
+        /**
+         * Función para desplazar el carrusel de más vendidos.
+         * @param {number} direction - 1 para derecha, -1 para izquierda.
+         */
+        function scrollCarousel(direction) {
+            const carousel = document.getElementById('bestsellers-carousel');
+            const scrollAmount = 300; // Desplazar 300px
+            carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+
+        // --- EVENT LISTENERS ---
+
+        window.onload = function() {
+            // Renderiza los productos iniciales
+            applyFilters(); // Renderiza usando los filtros iniciales (Tipo: Green Tea)
+
+            // Asigna los event listeners a los controles de filtro
+            const filterContainer = document.getElementById('filter-container');
+            filterContainer.addEventListener('change', applyFilters);
+            
+            // Asigna los event listeners a los filtros superiores (Size y Strength)
+            document.getElementById('top-filter-size').addEventListener('change', function(e) {
+                document.getElementById('filter-size').value = e.target.value;
+                applyFilters();
+            });
+            document.getElementById('top-filter-strength').addEventListener('change', function(e) {
+                document.getElementById('filter-strength').value = e.target.value;
+                applyFilters();
+            });
+            
+            // Asegura que el filtro de tipo de la sidebar esté en "Green Tea" por defecto
+            document.getElementById('filter-type').value = 'green';
+        };
+    </script>
+</body>
+</html>

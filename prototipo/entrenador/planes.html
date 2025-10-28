@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <title>RPE Tracker Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Definición de variables de color inspiradas en el mockup */
+        :root {
+            --bs-body-font-family: 'Inter', sans-serif;
+            --rpe-bg-dark: #212529;
+            --rpe-bg-light: #2c3238;
+            --rpe-border-color: #495057;
+            --rpe-primary: #fd7e14;
+            --rpe-text-primary: #f8f9fa;
+            --rpe-text-secondary: #adb5bd;
+        }
+
+        /* Estilos generales del cuerpo */
+        body {
+            background-color: var(--rpe-bg-dark);
+            color: var(--rpe-text-primary);
+            font-size: 0.9rem;
+        }
+
+        /* Contenedor principal para el layout de dos columnas */
+        .main-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            grid-template-rows: auto 1fr;
+            height: 100vh;
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        /* Barra de navegación superior */
+        .top-navbar {
+            grid-column: 1 / 3;
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--rpe-border-color);
+        }
+        .top-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--rpe-text-primary);
+        }
+        .top-navbar .navbar-brand .bi-bar-chart-steps {
+            transform: scaleX(-1);
+        }
+        .top-navbar .user-profile {
+            color: var(--rpe-text-secondary);
+        }
+        .top-navbar .user-profile a {
+            color: var(--rpe-text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .top-navbar .user-profile a:hover {
+            color: var(--rpe-text-primary);
+        }
+        .top-navbar .user-profile .bi {
+            font-size: 1.25rem;
+        }
+        .top-navbar .vr {
+            color: var(--rpe-border-color);
+            margin: 0 1rem;
+        }
+
+        /* Barra lateral de navegación */
+        .sidebar {
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--rpe-border-color);
+            height: 100%;
+            position: relative;
+        }
+        .sidebar .nav {
+            padding-bottom: 5rem; /* Espacio para el footer */
+        }
+        .sidebar .nav-link {
+            color: var(--rpe-text-secondary);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .sidebar .nav-link:hover {
+            background-color: #3a4149;
+            color: var(--rpe-text-primary);
+        }
+        .sidebar .nav-link.active {
+            background-color: var(--rpe-primary);
+            color: white;
+            font-weight: 600;
+        }
+        .sidebar .footer {
+            margin-top: auto;
+            font-size: 0.8rem;
+            color: var(--rpe-text-secondary);
+            padding-top: 1rem;
+            border-top: 1px solid var(--rpe-border-color);
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+        }
+
+        /* Área de contenido principal */
+        .main-content {
+            background-color: var(--rpe-bg-light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            overflow-y: auto;
+            border: 1px solid var(--rpe-border-color);
+        }
+
+        h5 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--rpe-text-primary);
+            letter-spacing: 0.5px;
+        }
+
+        /* Lista de Planes */
+        .plan-item {
+            background-color: var(--rpe-bg-dark);
+            border: 1px solid var(--rpe-border-color);
+            border-radius: 0.375rem;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tarjeta para "Nuevo Plan" */
+        .new-plan-card {
+            border: 2px dashed var(--rpe-border-color);
+            border-radius: 0.5rem;
+            background-color: var(--rpe-bg-dark);
+            height: 100%;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: var(--rpe-text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .new-plan-card:hover {
+            border-color: var(--rpe-primary);
+            color: var(--rpe-primary);
+            background-color: rgba(253, 126, 20, 0.05);
+        }
+        .new-plan-card .bi {
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Botones de acción */
+        .btn-custom-primary {
+            background-color: var(--rpe-primary);
+            border-color: var(--rpe-primary);
+            color: white;
+            font-weight: 600;
+        }
+        .btn-custom-primary:hover {
+            background-color: #d66a0f;
+            border-color: #d66a0f;
+            color: white;
+        }
+        .btn-custom-secondary {
+            background-color: var(--rpe-bg-dark);
+            border-color: var(--rpe-border-color);
+            color: var(--rpe-text-primary);
+            font-weight: 600;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #3a4149;
+            border-color: var(--rpe-border-color);
+            color: var(--rpe-text-primary);
+        }
+        .btn-edit {
+            background-color: var(--rpe-bg-light);
+            border-color: var(--rpe-border-color);
+            color: var(--rpe-text-secondary);
+            font-weight: 500;
+        }
+        .btn-edit:hover {
+             background-color: #3a4149;
+             border-color: var(--rpe-border-color);
+             color: var(--rpe-text-primary);
+        }
+        
+        /* Adaptación para pantallas pequeñas */
+        /* Estilos para el botón del menú */
+        .navbar-toggler {
+            padding: 0;
+            color: var(--rpe-text-primary);
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+
+        /* Overlay para el menú móvil */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1044;
+        }
+        
+        .sidebar-backdrop.show {
+            display: block;
+        }
+
+        @media (max-width: 992px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                min-height: 100vh;
+            }
+            .top-navbar {
+                grid-column: 1;
+                z-index: 1046;
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 260px;
+                height: 100vh;
+                z-index: 1045;
+                padding-top: 5.5rem !important;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                background-color: var(--rpe-bg-light);
+                display: flex;
+                flex-direction: column;
+            }
+            .sidebar .nav {
+                flex: 1 1 auto;
+                margin-bottom: 1rem;
+            }
+            .sidebar .footer {
+                flex-shrink: 0;
+                padding-top: 1rem;
+                border-top: 1px solid var(--rpe-border-color);
+                margin-top: auto;
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .sidebar.collapsing {
+                transition: transform 0.3s ease-in-out;
+                transform: translateX(-100%);
+            }
+            .main-content {
+                grid-row: 2;
+            }
+        }
+        @media (max-width: 768px) {
+             .main-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+             .sidebar {
+                padding: 1rem;
+            }
+            .main-content {
+                padding: 1rem;
+            }
+            .top-navbar {
+                padding: 0.75rem 1rem;
+            }
+            .top-navbar .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .top-navbar .d-none.d-md-inline {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+        <nav class="top-navbar d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="navbar-toggler d-lg-none border-0 px-0 me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                    <i class="bi bi-list text-light fs-4"></i>
+                </button>
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-bar-chart-steps"></i> RPE TRACKER
+                </a>
+            </div>
+            <div class="user-profile d-flex align-items-center">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <span class="d-none d-md-inline">Perfil / Usuario</span>
+                <div class="vr d-none d-md-inline"></div>
+                <a href="#" class="me-3"><i class="bi bi-gear-fill fs-5"></i></a>
+                <div class="vr d-none d-md-inline"></div>
+                <a href="../index.html" class="ms-3 text-danger" title="Cerrar Sesión">
+                    <i class="bi bi-power fs-5"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Backdrop para móvil -->
+        <div class="sidebar-backdrop" data-bs-toggle="collapse" data-bs-target="#sidebarMenu"></div>
+        
+        <!-- BARRA LATERAL -->
+        <aside class="sidebar collapse d-lg-block" id="sidebarMenu">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="./index.html">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./atletas.html">Atletas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="./planes.html">Planes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./detalle.html">Detalle</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./feedback-rpe.html">Feedback</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./configuracion.html">Configuración</a>
+                </li>
+            </ul>
+            <div class="footer">
+                &copy; 2025 RPE Tracker <span class="ms-2">v0.1.0</span>
+            </div>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5>PLANES DE ENTRENAMIENTO</h5>
+                <button class="btn btn-custom-primary d-none d-lg-block"><i class="bi bi-plus-lg me-1"></i> Nuevo Plan</button>
+            </div>
+
+             <div class="row gx-4">
+                <!-- Columna Izquierda: Lista de Planes -->
+                <div class="col-lg-8">
+                    <div class="plan-list">
+                        <!-- Plan 1 -->
+                        <div class="plan-item">
+                            <div>
+                                <h6 class="mb-0 text-white">Plan Crossfit Avanzado</h6>
+                                <small class="text-secondary">Fuerza y resistencia</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-edit">Editar</button>
+                                <button class="btn btn-sm btn-custom-primary">Asignar a atleta</button>
+                            </div>
+                        </div>
+                        <!-- Plan 2 -->
+                        <div class="plan-item">
+                            <div>
+                                <h6 class="mb-0 text-white">Plan Crossfit Avanzado</h6>
+                                <small class="text-secondary">Fuerza y resistencia</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-edit">Editar</button>
+                                <button class="btn btn-sm btn-custom-primary">Asignar a atleta</button>
+                            </div>
+                        </div>
+                        <!-- Plan 3 -->
+                        <div class="plan-item">
+                           <div>
+                                <h6 class="mb-0 text-white">Plan Crossfit Atleta</h6>
+                                <small class="text-secondary">Fuerza y resistencia</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-edit">Editar</button>
+                                <button class="btn btn-sm btn-custom-primary">Asignar a atleta</button>
+                            </div>
+                        </div>
+                        <!-- Plan 4 -->
+                        <div class="plan-item">
+                            <div>
+                                <h6 class="mb-0 text-white">Plan Crossfit Avanzado</h6>
+                                <small class="text-secondary">Fuerza y resistencia</small>
+                            </div>
+                           <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-edit">Editar</button>
+                                <button class="btn btn-sm btn-custom-primary">Asignar a atleta</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-custom-primary mt-3">Cargar más</button>
+                </div>
+        
+                <!-- Columna Derecha: Invitar Atleta -->
+                <div class="col-lg-4 mt-4 mt-lg-0">
+                     <div class="new-plan-card">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>Nuevo Plan</span>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-color: var(--rpe-border-color);">
+
+            <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-custom-secondary"><i class="bi bi-plus-lg"></i> Nueva sesión</button>
+                <button class="btn btn-custom-secondary"><i class="bi bi-graph-up"></i> Ver progreso</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Manejador del menú móvil
+        document.addEventListener('DOMContentLoaded', function() {
+            const backdrop = document.querySelector('.sidebar-backdrop');
+            const sidebar = document.getElementById('sidebarMenu');
+            
+            if (!sidebar) return;
+            
+            // Mostrar/ocultar backdrop cuando el menú se abre/cierra
+            sidebar.addEventListener('show.bs.collapse', function () {
+                if (backdrop) backdrop.classList.add('show');
+            });
+            
+            sidebar.addEventListener('hide.bs.collapse', function () {
+                if (backdrop) backdrop.classList.remove('show');
+            });
+            
+            // Cerrar menú al hacer click en un enlace (en móvil)
+            const navLinks = sidebar.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth < 992) {
+                        const collapseInstance = bootstrap.Collapse.getInstance(sidebar);
+                        if (collapseInstance) {
+                            collapseInstance.hide();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
+

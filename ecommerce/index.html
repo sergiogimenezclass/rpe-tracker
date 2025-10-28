@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tienda de Té - Bootstrap</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Corporate palette variables */
+        :root {
+            /* Primary colors */
+            --primary: #003366;         /* Azul de Rendimiento - acciones principales */
+            --accent: #FF6600;          /* Naranja de Energía - acciones secundarias */
+            --success: #28A745;         /* Verde de Éxito - estados positivos */
+            
+            /* Text and backgrounds */
+            --bg-white: #FFFFFF;        /* Fondo principal */
+            --text-dark: #333333;       /* Texto principal */
+            --text-muted: #6C757D;      /* Texto secundario */
+            --border-light: #E9ECEF;    /* Bordes sutiles */
+            
+            /* Layout */
+            --container-max: 1200px;
+            --spacing-unit: 1rem;       /* Base para márgenes y padding */
+            --border-radius: 0.5rem;    /* Bordes redondeados consistentes */
+            
+            /* Shadows */
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            
+            /* States */
+            --hover-opacity: 0.9;
+            --disabled-opacity: 0.65;
+        }
+
+        /* Dark theme variables */
+        .theme-dark {
+            --bg-main: #2C2C34;
+            --bg-gradient: linear-gradient(180deg, #2C2C34 0%, #33333b 100%);
+            --card-bg: #3A3A42;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A0A0A0;
+            --border-color: rgba(255,255,255,0.1);
+        }
+
+        /* Light theme variables */
+        .theme-light {
+            --bg-main: #F8F9FA;
+            --bg-gradient: linear-gradient(180deg, #F8F9FA 0%, #FFFFFF 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --border-color: rgba(0,0,0,0.1);
+        }
+
+        /* Base styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+            background: var(--bg-white);
+            color: var(--text-dark);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.5;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Links and Buttons */
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: opacity 0.2s ease;
+        }
+        
+        a:hover {
+            opacity: var(--hover-opacity);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Cards and Containers */
+        .card {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Base layout colors */
+        body{
+            background: var(--bg-dark-2);
+            color: var(--text-on-dark);
+            min-height:100vh;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            line-height: 1;
+            text-align: center;
+            border: 2px solid var(--accent-action);
+            background: transparent;
+            color: var(--accent-action);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+        }
+        .theme-toggle:hover {
+            background: var(--accent-action);
+            color: white;
+            transform: scale(1.05);
+        }
+        .theme-toggle .material-icons {
+            font-size: 1.2rem;
+        }
+        
+        /* Add transitions for theme changes */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .card, .nav-link, .btn {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        /* Brand color helpers */
+        .brand-color { color: var(--accent-action) !important; }
+        .brand-bg { background-color: var(--accent-action) !important; }
+
+        /* Main content uses a slightly transparent layer so cards stand out */
+        .main-content { background: transparent; }
+
+        /* Banner image style */
+        .banner-img { width: 100%; height: 320px; object-fit: cover; border-radius: 8px; display:block; }
+
+        /* Cards styling */
+        .card { 
+            background: var(--card-bg); 
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card .card-title, .card h5 { color: var(--text-primary); }
+        .card .text-muted { color: var(--text-secondary) !important; }
+
+        /* Navbar styles */
+        header { 
+            background: var(--bg-main);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .navbar-brand { color: var(--text-primary) !important; }
+        .navbar-brand .material-icons { color: var(--accent-action); }
+        .navbar .nav-link { color: var(--text-secondary); }
+        .navbar .nav-link:hover { color: var(--text-primary); }
+        
+        /* Theme specific adjustments */
+        .theme-light .navbar-toggler-icon {
+            filter: invert(0);
+        }
+        .theme-dark .navbar-toggler-icon {
+            filter: invert(1);
+        }
+        
+        /* Common theme adjustments */
+        .card, 
+        .rounded-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        strong, 
+        .strong {
+            color: var(--text-primary);
+        }
+
+        a:not(.btn):not(.navbar-brand) {
+            color: var(--accent-action);
+        }
+        
+        a:not(.btn):not(.navbar-brand):hover {
+            color: var(--accent-action);
+            opacity: 0.8;
+        }
+
+        /* Footer adjustments for themes */
+        footer {
+            background: var(--bg-main);
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Additional dark theme specific styles */
+        .theme-dark .shadow-sm {
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,0.15) !important;
+        }
+
+        /* Form controls in dark theme */
+        .theme-dark .form-select,
+        .theme-dark .form-control {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        .theme-dark .form-select option {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .theme-dark .form-check-label {
+            color: var(--text-primary);
+        }
+
+        .theme-dark .form-check-input {
+            background-color: var(--bg-main);
+            border-color: var(--border-color);
+        }
+
+        .theme-dark .form-check-input:checked {
+            background-color: var(--accent-action);
+            border-color: var(--accent-action);
+        }
+
+        /* Product grid loading state */
+        .theme-dark .spinner-border {
+            color: var(--accent-action) !important;
+        }
+        
+        .theme-dark #loading-message {
+            color: var(--text-primary);
+        }
+
+        /* Buttons: primary action uses bright orange; secondary uses semi-opaque white */
+        .btn-brand { background: var(--accent-action); color: #fff; border: none; }
+        .btn-outline-light-custom { border-color: rgba(255,255,255,0.12); color: rgba(255,255,255,0.9); }
+
+        /* Accent for success/progress elements */
+        .progress-bar-success { background-color: var(--accent-success); }
+
+        /* Carrusel horizontal con Bootstrap */
+        /* Mantener overflow-x:auto para permitir desplazamiento programático,
+           pero ocultar la barra de scroll visual en la mayoría de navegadores. */
+        #bestsellers-carousel {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 1rem;
+            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none; /* Firefox */
+        }
+        /* Webkit-based browsers */
+        #bestsellers-carousel::-webkit-scrollbar { display: none; height: 0; }
+
+        #bestsellers-carousel .bestseller-card { min-width:16rem; flex:0 0 auto; }
+
+        /* Footer inputs styling to fit light card look */
+        .footer-input { width:100%; padding:.5rem; border-radius:.25rem; border:1px solid #e6e6e6; }
+
+        /* Utility tweaks */
+        .text-secondary-gray { color: var(--text-secondary); }
+        .text-success-neon { color: var(--accent-success); }
+        .text-secondary { color: var(--text-secondary) !important; }
+        .fw-semibold { font-weight: 600; }
+
+        /* Footer tweaks for dark theme */
+        .footer-input { 
+            background: var(--card-bg);
+            color: var(--text-on-card);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .footer-input::placeholder {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+    <!-- CABECERA y NAVEGACIÓN (Materialize) -->
+    <!-- Header Bootstrap -->
+    <header>
+        <nav class="container navbar navbar-expand-lg py-3">
+            <a class="navbar-brand d-flex align-items-center brand-color" href="index.html">
+                <span class="material-icons">spa</span>
+                <span class="ms-2 fw-semibold">The Tea Stop</span>
+            </a>
+            <div class="d-flex align-items-center">
+                <!-- Theme toggle before the menu on mobile -->
+                <button class="theme-toggle me-2 d-lg-none" id="themeToggleMobile" aria-label="Cambiar tema">
+                    <span class="material-icons">dark_mode</span>
+                </button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#">Tienda</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Suscribirse</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Acerca de</a></li>
+                    <li class="nav-item ms-2 d-none d-lg-block">
+                        <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+                            <span class="material-icons">dark_mode</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- BANNER PRINCIPAL (Hero) -->
+    <section class="py-5" style="background: var(--bg-main);">
+        <div class="container">
+            <div class="p-3">
+                <img class="banner-img" src="https://placehold.co/1200x400/D4C7B4/3A3A3A?text=Taza+de+T%C3%A9+Verde+con+Hojas+Secas+en+Fondo+Neutro" alt="Banner">
+            </div>
+        </div>
+    </section>
+    <!-- SECCIÓN DE CATEGORÍAS (Material chips) -->
+    <section class="py-3" style="background: var(--bg-main);">
+        <div class="container">
+            <div class="p-3 rounded d-flex justify-content-between align-items-center mb-3" style="background: var(--card-bg); border: 1px solid var(--border-color);">
+                <div><strong style="color: var(--text-primary);">Explorar por categoría</strong></div>
+                <div><a href="#" style="color: var(--accent-action);">Ver todas</a></div>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap mb-4">
+                <a href="categorias.html" class="btn btn-brand btn-sm">Tés Verdes</a>
+                <button class="btn btn-outline-light-custom btn-sm">Tés Negros</button>
+                <button class="btn btn-outline-light-custom btn-sm">Infusiones</button>
+                <button class="btn btn-outline-light-custom btn-sm">Matcha</button>
+                <button class="btn btn-outline-light-custom btn-sm">Regalos & Kits</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- CUERPO PRINCIPAL (Filtros y Productos) -->
+    <main style="background: var(--bg-main);">
+        <div class="container">
+            <div class="row">
+                <!-- Sidebar de filtros (Bootstrap grid) -->
+                <aside class="col-12 col-lg-3 mb-4">
+                    <div class="card" style="background: var(--card-bg);">
+                        <div class="card-body">
+                            <h5 class="card-title" style="color: var(--accent-action);">Filtro</h5>
+                            <div id="filter-container">
+                                <div class="mb-3">
+                                    <label for="filter-type" class="form-label" style="color: var(--text-primary);">Tipo</label>
+                                    <select id="filter-type" class="form-select" style="background: var(--bg-main); color: var(--text-primary); border-color: var(--border-color);">
+                                        <option value="all">Todos</option>
+                                        <option value="green">Té Verde</option>
+                                        <option value="white">Té Blanco</option>
+                                        <option value="matcha">Matcha</option>
+                                        <option value="rooibos">Rooibos</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="filter-strength" class="form-label">Fuerza</label>
+                                    <select id="filter-strength" class="form-select">
+                                        <option value="all">Cualquiera</option>
+                                        <option value="light">Ligera</option>
+                                        <option value="medium">Media</option>
+                                        <option value="strong">Fuerte</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Cafeína</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="caffeine-caff" value="Caffeinated" checked>
+                                        <label class="form-check-label" for="caffeine-caff">Cafeinado</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="caffeine-decaff" value="Decaffeinated">
+                                        <label class="form-check-label" for="caffeine-decaff">Descafeinado</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="filter-source" class="form-label">Fuente</label>
+                                    <select id="filter-source" class="form-select">
+                                        <option value="all">Todas</option>
+                                        <option value="china">China</option>
+                                        <option value="india">India</option>
+                                        <option value="japan">Japón</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Grid de productos -->
+                <section class="col-12 col-lg-9">
+                    <div id="product-grid" class="row">
+                        <div class="col-12 text-center py-4" id="loading-message">
+                            <div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div>
+                            <p>Cargando productos...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- SECCIÓN DE MEJOR VENDIDOS (Carousel) -->
+    <section class="py-5 mt-5" style="background: var(--bg-main);">
+        <div class="container">
+            <h2 class="mb-4" style="color: var(--text-primary);">Prueba nuestros más vendidos</h2>
+            <p class="mb-8" style="color: var(--text-secondary);">
+                En The Tea Stop, nos encanta la forma en que el té tiene la capacidad de crear una sonrisa. Nos encanta lo simple y elegante que puede ser. Nos encanta cómo una taza de té puede ayudar a crear una mente tranquila para una tarde muy ajetreada o una ocasión de celebración.
+            </p>
+
+            <div class="position-relative py-3">
+                <button id="bestsellers-prev" class="btn btn-outline-light-custom position-absolute" style="left:0;top:50%;transform:translate(-50%,-50%);z-index:5;">&larr;</button>
+                <div id="bestsellers-carousel" class="d-flex gap-3 px-3">
+                    <div class="card bestseller-card p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle overflow-hidden me-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);">
+                                <img src="https://placehold.co/60x60/8B4513/ffffff?text=Bergamota" alt="Earl Grey" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-white">Earl Grey</div>
+                                <div class="text-secondary small">Sabor Audaz y Frutal</div>
+                                <div class="fw-bold text-success-neon mt-1">$9</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bestseller-card p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle overflow-hidden me-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);">
+                                <img src="https://placehold.co/60x60/90EE90/3A3A3A?text=Flor+Jazmin" alt="Jasmine Tea" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-white">Té Jazmín</div>
+                                <div class="text-secondary small">Sabor Ligero y Refrescante</div>
+                                <div class="fw-bold text-success-neon mt-1">$9</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bestseller-card p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle overflow-hidden me-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);">
+                                <img src="https://placehold.co/60x60/3CB371/ffffff?text=Hojas+Menta" alt="Té Menta" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-white">Té de Menta</div>
+                                <div class="text-secondary small">Suave y Digestivo</div>
+                                <div class="fw-bold text-success-neon mt-1">$11</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card bestseller-card p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle overflow-hidden me-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);">
+                                <img src="https://placehold.co/60x60/FFD700/3A3A3A?text=Oolong" alt="Oolong" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-white">Oolong</div>
+                                <div class="text-secondary small">Balance floral y tostado</div>
+                                <div class="fw-bold text-success-neon mt-1">$14</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card bestseller-card p-3">
+                        <div class="d-flex align-items-center">
+                            <div class="rounded-circle overflow-hidden me-3" style="width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:var(--bg-dark);">
+                                <img src="https://placehold.co/60x60/FF69B4/3A3A3A?text=Rooibos" alt="Rooibos" style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <div>
+                                <div class="fw-semibold text-white">Rooibos</div>
+                                <div class="text-secondary small">Aromas frutales</div>
+                                <div class="fw-bold text-success-neon mt-1">$12</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button id="bestsellers-next" class="btn btn-outline-light-custom position-absolute" style="right:0;top:50%;transform:translate(50%,-50%);z-index:5;">&rarr;</button>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer class="py-5 mt-5" style="background: var(--bg-main); color: var(--text-primary);">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-6 mb-4">
+                    <h6 class="mb-2" style="color: var(--text-primary);">Mantente al día: Suscríbete a nuestro boletín</h6>
+                    <div class="d-flex gap-2">
+                        <input type="email" placeholder="Ingresa tu correo electrónico" class="footer-input" />
+                        <button class="btn btn-brand">Suscribirse ahora</button>
+                    </div>
+                </div>
+
+                <div class="col-12 col-lg-6">
+                    <div class="row">
+                        <div class="col-6 col-md-4 mb-3">
+                            <h6>Ayuda</h6>
+                            <ul class="list-unstyled">
+                                <li><a class="text-decoration-none" href="#" style="color: var(--text-secondary);">Preguntas frecuentes</a></li>
+                                <li><a class="text-decoration-none" href="#" style="color: var(--text-secondary);">Política de privacidad</a></li>
+                                <li><a class="text-decoration-none" href="#" style="color: var(--text-secondary);">Términos y condiciones</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-6 col-md-4 mb-3">
+                            <h6>Ofrecer</h6>
+                            <ul class="list-unstyled">
+                                <li><a class="text-secondary text-decoration-none" href="#">Mapa del sitio</a></li>
+                                <li><a class="text-secondary text-decoration-none" href="#">Té de la semana</a></li>
+                                <li><a class="text-secondary text-decoration-none" href="#">Suscriptores</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3">
+                            <h6>Contacto</h6>
+                            <ul class="list-unstyled">
+                                <li><a class="text-secondary text-decoration-none" href="#">Servicio al cliente</a></li>
+                                <li><a class="text-secondary text-decoration-none" href="#">Consultas minoristas</a></li>
+                                <li><a class="text-secondary text-decoration-none" href="#">Contáctanos</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4 text-secondary">© 2023 The Tea Stop</div>
+        </div>
+    </footer>
+
+
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggles = [
+                document.getElementById('themeToggle'),
+                document.getElementById('themeToggleMobile')
+            ];
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.classList.add(`theme-${savedTheme}`);
+            updateThemeIcons(savedTheme === 'light');
+
+            // Add click handler to both toggles
+            themeToggles.forEach(toggle => {
+                if (toggle) {
+                    toggle.addEventListener('click', toggleTheme);
+                }
+            });
+
+            function toggleTheme() {
+                const isDark = document.body.classList.contains('theme-dark');
+                const newTheme = isDark ? 'light' : 'dark';
+                
+                // Remove old theme and add new theme
+                document.body.classList.remove(`theme-${isDark ? 'dark' : 'light'}`);
+                document.body.classList.add(`theme-${newTheme}`);
+                
+                // Update icons and save preference
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcons(!isDark);
+            }
+
+            function updateThemeIcons(isLight) {
+                themeToggles.forEach(toggle => {
+                    if (toggle) {
+                        const icon = toggle.querySelector('.material-icons');
+                        if (icon) {
+                            icon.textContent = isLight ? 'light_mode' : 'dark_mode';
+                        }
+                    }
+                });
+            }
+        });
+
+        // --- DATA MOCKUP (Simulación de la base de datos de productos) ---
+        // Se han actualizado los placeholders de imágenes para simular fotos de producto más realistas.
+        const productsData = [
+            { id: 1, name: "Té Verde", price: 13, type: "green", strength: "medium", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/5A7543/ffffff?text=T%C3%A9+Verde+Hojas" },
+            { id: 2, name: "Té Blanco", price: 31, type: "white", strength: "light", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/F0F0F0/3A3A3A?text=T%C3%A9+Blanco+Brotes" },
+            { id: 3, name: "Súper Matcha", price: 12, type: "matcha", strength: "strong", caffeine: "Caffeinated", source: "japan", image: "https://placehold.co/200x200/779A52/ffffff?text=Polvo+Matcha" },
+            { id: 4, name: "Rooibos Navideño", price: 17, type: "rooibos", strength: "medium", caffeine: "Decaffeinated", source: "africa", image: "https://placehold.co/200x200/B22222/ffffff?text=Rooibos+Navidad" },
+            { id: 5, name: "Té Plata", price: 10, type: "white", strength: "light", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/E5E5E5/3A3A3A?text=T%C3%A9+Plata+Aguja" },
+            { id: 6, name: "Té de Jazmín Verde", price: 12, type: "green", strength: "light", caffeine: "Caffeinated", source: "china", image: "https://placehold.co/200x200/8AC869/ffffff?text=Jazm%C3%ADn+Verde+Flor" },
+            { id: 7, name: "Té Wnck", price: 10, type: "herbal", strength: "medium", caffeine: "Decaffeinated", source: "other", image: "https://placehold.co/200x200/C4A484/3A3A3A?text=Mezcla+Herbal" },
+            // Placeholder del té negro actualizado para ser más oscuro (1C1C1C)
+            { id: 8, name: "Té Negro", price: 10, type: "black", strength: "strong", caffeine: "Caffeinated", source: "india", image: "https://placehold.co/200x200/1C1C1C/D4C7B4?text=T%C3%A9+Negro+Intenso" },
+            { id: 9, name: "Rooibos de Frutas", price: 12, type: "rooibos", strength: "light", caffeine: "Decaffeinated", source: "africa", image: "https://placehold.co/200x200/FF6347/ffffff?text=Rooibos+Frutas" },
+        ];
+
+        // --- FUNCIONES DE RENDERIZADO Y FILTRO ---
+
+        /**
+         * Crea el elemento HTML para una tarjeta de producto.
+         * @param {Object} product - Objeto de producto.
+         * @returns {string} El HTML de la tarjeta de producto.
+         */
+        function createProductCard(product) {
+            return `
+                <div class="col-12 col-md-6 col-xl-3 mb-4">
+                    <a href="producto.html?id=${product.id}" class="text-decoration-none text-reset" aria-label="Ver ${product.name}">
+                        <div class="card h-100" data-type="${product.type}" data-strength="${product.strength}" data-caffeine="${product.caffeine}" data-source="${product.source}">
+                            <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height:180px;object-fit:cover;">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title mb-2">${product.name}</h5>
+                                <p class="mt-auto fw-bold text-success">$${product.price}</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            `;
+        }
+
+        /**
+         * Renderiza la lista de productos en el grid.
+         * @param {Array} products - Lista de productos a renderizar.
+         */
+        function renderProducts(products) {
+            const grid = document.getElementById('product-grid');
+            const loading = document.getElementById('loading-message');
+
+            if (loading) {
+                loading.remove();
+            }
+
+            if (products.length === 0) {
+                grid.innerHTML = '<p class="col-span-4 text-center text-gray-500 py-10">No se encontraron productos que coincidan con los filtros.</p>';
+                return;
+            }
+
+            grid.innerHTML = products.map(createProductCard).join('');
+        }
+
+        /**
+         * Aplica los filtros seleccionados a la lista de productos.
+         */
+        function applyFilters() {
+            const selectedType = document.getElementById('filter-type').value;
+            const selectedStrength = document.getElementById('filter-strength').value;
+            const selectedSource = document.getElementById('filter-source').value;
+            
+            const caffeinatedChecked = document.getElementById('caffeine-caff').checked;
+            const decaffeinatedChecked = document.getElementById('caffeine-decaff').checked;
+
+            const filteredProducts = productsData.filter(product => {
+                // 1. Filtrar por Tipo
+                if (selectedType !== 'all' && product.type !== selectedType) {
+                    return false;
+                }
+
+                // 2. Filtrar por Fuerza
+                if (selectedStrength !== 'all' && product.strength !== selectedStrength) {
+                    return false;
+                }
+                
+                // 3. Filtrar por Fuente
+                if (selectedSource !== 'all' && product.source !== selectedSource) {
+                    return false;
+                }
+
+                // 4. Filtrar por Cafeína (Checkboxes)
+                const isCaffeinated = product.caffeine === 'Caffeinated';
+                const isDecaffeinated = product.caffeine === 'Decaffeinated';
+                
+                // Si ambos están marcados, no filtra por cafeína (muestra todo)
+                if (caffeinatedChecked && decaffeinatedChecked) {
+                    return true;
+                } 
+                // Si solo está marcado Cafeinado
+                else if (caffeinatedChecked && !decaffeinatedChecked) {
+                    return isCaffeinated;
+                }
+                // Si solo está marcado Descafeinado
+                else if (!caffeinatedChecked && decaffeinatedChecked) {
+                    return isDecaffeinated;
+                }
+                // Si ninguno está marcado (oculta todos)
+                else {
+                    return false;
+                }
+
+            });
+
+            renderProducts(filteredProducts);
+        }
+        
+        /**
+         * Función para desplazar el carrusel de más vendidos.
+         * @param {number} direction - 1 para derecha, -1 para izquierda (no implementado en el diseño final).
+         */
+        function scrollCarousel(direction) {
+            const carousel = document.getElementById('bestsellers-carousel');
+            const scrollAmount = 300; // Desplazar 300px
+            carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
+
+
+        // --- EVENT LISTENERS ---
+
+        window.onload = function() {
+            // Renderiza los productos iniciales
+            renderProducts(productsData);
+
+            // Asigna los event listeners a los controles de filtro
+            const filterContainer = document.getElementById('filter-container');
+            filterContainer.addEventListener('change', applyFilters);
+
+            // No hay inicialización adicional requerida para Bootstrap en selects simples
+            // Botones del carrusel de bestsellers
+            const prevBtn = document.getElementById('bestsellers-prev');
+            const nextBtn = document.getElementById('bestsellers-next');
+            if (prevBtn) prevBtn.addEventListener('click', () => scrollCarousel(-1));
+            if (nextBtn) nextBtn.addEventListener('click', () => scrollCarousel(1));
+        };
+    </script>
+
+    <!-- Bootstrap bundle JS (Popper incluido) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout y Pago</title>
+    <!-- Carga de Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración personalizada de Tailwind para fuentes y colores -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#5A7543', // Color principal del logo y acentos
+                        'secondary-gray': '#3A3A3A', // Color del texto oscuro/fondo del footer
+                        'background-light': '#F5F5F0', // Fondo claro
+                        'dark-button': '#2D3748', // Botón oscuro para "Finish purchase"
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Estilo adicional para los inputs de formulario -->
+    <style>
+        .input-line {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            padding-left: 0.5rem;
+            padding-bottom: 0.5rem;
+            outline: none;
+            transition: border-bottom-color 0.2s;
+        }
+        .input-line:focus {
+            border-bottom-color: #5A7543;
+        }
+    </style>
+</head>
+<body class="font-sans text-secondary-gray bg-background-light min-h-screen flex flex-col">
+
+    <!-- CABECERA y NAVEGACIÓN (Reutilizada) -->
+    <header class="shadow-sm flex-shrink-0">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16 bg-white">
+            <!-- Logo y Links -->
+            <div class="flex items-center space-x-8">
+                <a href="index.html" class="flex items-center space-x-2 text-primary-green">
+                    <!-- Icono SVG simple de hoja de té -->
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                    </svg>
+                    <span class="font-bold text-lg hidden sm:inline">Logo</span>
+                </a>
+                <!-- Menú de navegación -->
+                <div class="hidden md:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">Shop</a>
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">Subscribe</a>
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">About</a>
+                </div>
+            </div>
+
+            <!-- Búsqueda -->
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden sm:block">
+                    <input type="text" placeholder="Search product" class="pl-10 pr-4 py-1 border border-gray-300 rounded-full text-sm focus:ring-primary-green focus:border-primary-green" />
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- CUERPO PRINCIPAL - VISTA DE CHECKOUT Y PAGO -->
+    <main class="main-content container mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-grow">
+        
+        <!-- Contenedor principal para las dos columnas -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+            
+            <!-- COLUMNA IZQUIERDA: Resumen del Pedido y Opciones -->
+            <div class="space-y-8">
+                
+                <!-- Botón de Retroceso -->
+                <a href="#" class="flex items-center text-sm font-medium text-gray-600 hover:text-primary-green mb-8">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back
+                </a>
+
+                <!-- Título y Subtítulo -->
+                <h1 class="text-3xl md:text-5xl font-extrabold text-secondary-gray">
+                    Items overview
+                </h1>
+                <p class="text-gray-600 text-base">
+                    This is your order summary where you can edit and delete your order and select your preferred delivery type.
+                </p>
+
+                <!-- Tarjeta de Producto (Resumen) -->
+                <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                    <div class="flex items-start space-x-4">
+                        <!-- Imagen del Producto -->
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                       <img src="https://placehold.co/100x100/D4C7B4/3A3A3A?text=Green+Tea" 
+                           alt="Green Tea" class="w-full h-full object-cover">
+                        </div>
+                        
+                        <!-- Detalles -->
+                        <div>
+                            <h2 class="text-lg font-semibold text-secondary-gray">Green Tea</h2>
+                            <p class="text-sm text-gray-500">Packed Bags</p>
+                            <p class="text-sm text-gray-500">Quantity: 1</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Precio -->
+                    <span class="text-xl font-extrabold text-secondary-gray">$31</span>
+                </div>
+
+                <!-- Opciones de Envío -->
+                <div class="space-y-4 pt-4">
+                    <h2 class="text-xl font-semibold text-secondary-gray">Available Shipping Methods</h2>
+                    
+                    <!-- Opción de envío -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="shipping-option" value="post-office" checked 
+                                   class="form-radio h-4 w-4 text-primary-green focus:ring-primary-green border-gray-300">
+                            <span class="text-base text-secondary-gray">Post Office Deliver</span>
+                        </label>
+                        <span class="text-base font-semibold text-primary-green">Free</span>
+                    </div>
+                    <!-- Se podrían agregar más opciones aquí si fuera necesario -->
+                </div>
+                
+                <!-- Opciones de Pago -->
+                <div class="space-y-4 pt-4">
+                    <h2 class="text-xl font-semibold text-secondary-gray">Payment Options</h2>
+                    
+                    <!-- Opción de pago -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="radio" name="payment-option" value="mobile-pay" checked 
+                                   class="form-radio h-4 w-4 text-primary-green focus:ring-primary-green border-gray-300">
+                            <span class="text-base text-secondary-gray">Mobile Pay</span>
+                        </label>
+                    </div>
+                    <!-- Se podrían agregar más opciones de pago aquí -->
+                </div>
+            </div>
+            
+            <!-- COLUMNA DERECHA: Detalles de Pago (Formulario) -->
+            <div class="space-y-8">
+                <h1 class="text-3xl md:text-5xl font-extrabold text-secondary-gray">
+                    Payment details
+                </h1>
+                
+                <form id="payment-form" class="space-y-6">
+                    <!-- Email Address -->
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <input type="email" id="email" name="email" required 
+                               class="input-line w-full bg-background-light" placeholder="email@example.com">
+                    </div>
+
+                    <!-- Full Name -->
+                    <div>
+                        <label for="full-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                        <input type="text" id="full-name" name="full-name" required
+                               class="input-line w-full bg-background-light" placeholder="John Doe">
+                    </div>
+
+                    <!-- Address -->
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                        <input type="text" id="address" name="address" required
+                               class="input-line w-full bg-background-light" placeholder="123 Tea Lane">
+                    </div>
+
+                    <!-- City -->
+                    <div>
+                        <label for="city" class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input type="text" id="city" name="city" required
+                               class="input-line w-full bg-background-light" placeholder="Teaville">
+                    </div>
+
+                    <!-- Zip Code -->
+                    <div>
+                        <label for="zip-code" class="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
+                        <input type="text" id="zip-code" name="zip-code" required
+                               class="input-line w-full bg-background-light" placeholder="10001">
+                    </div>
+
+                    <!-- Botón de Compra Final -->
+                    <button type="submit" class="w-full bg-dark-button hover:bg-gray-700 text-white font-bold py-4 px-6 rounded-lg transition duration-150 shadow-lg mt-8">
+                        Finish purchase
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER (Reutilizado) -->
+    <footer class="bg-secondary-gray text-white mt-12 flex-shrink-0">
+        <!-- Sección de Suscripción -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 border-b border-gray-600">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <!-- Texto de invitación -->
+                <p class="text-sm">Let's stay in touch! Sign up to our newsletter and get the best deals!</p>
+                <!-- Formulario de suscripción -->
+                <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                    <input type="email" placeholder="Insert your email address here" class="flex-grow p-3 rounded-lg text-secondary-gray focus:ring-primary-green focus:border-primary-green" />
+                    <button class="bg-primary-green hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-150">
+                        Subscribe now
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Enlaces y Logo -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-sm">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+                <!-- Columna 1: Logo y Copyright -->
+                <div class="col-span-2 md:col-span-1 flex flex-col items-start">
+                    <a href="index.html" class="flex items-center space-x-2 text-primary-green mb-4">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                        </svg>
+                        <span class="font-bold text-lg text-white">Logo</span>
+                    </a>
+                    <p class="text-xs text-gray-400">&copy; 2023 The Tea Stop. All rights reserved.</p>
+                    <div class="flex space-x-3 mt-4">
+                        <!-- Íconos de redes sociales (simulados) -->
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-150">F</a>
+                        <a href="#" class="text-gray-400 hover:text-white transition duration-150">I</a>
+                    </div>
+                </div>
+
+                <!-- Columnas de Enlaces -->
+                <div>
+                    <h3 class="font-semibold mb-3">Help</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white">Customer service</a></li>
+                        <li><a href="#" class="hover:text-white">How to guides</a></li>
+                        <li><a href="#" class="hover:text-white">Contact us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">Other</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Sitemap</a></li>
+                        <li><a href="#" class="hover:text-white">Subscriptions</a></li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- LÓGICA DEL FORMULARIO DE PAGO ---
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentForm = document.getElementById('payment-form');
+            
+            if (paymentForm) {
+                paymentForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Evita el envío real del formulario (simulación)
+                    
+                    const form = event.target;
+                    
+                    // Simple validación de ejemplo
+                    if (form['email'].value === '' || form['full-name'].value === '') {
+                        console.error("Please fill in the required fields.");
+                        // En un entorno real, mostrarías una alerta personalizada
+                        return;
+                    }
+                    
+                    console.log("Processing payment...");
+
+                    // Recolectar datos del formulario (simulación)
+                    const formData = {
+                        email: form['email'].value,
+                        fullName: form['full-name'].value,
+                        address: form['address'].value,
+                        city: form['city'].value,
+                        zipCode: form['zip-code'].value,
+                        shipping: document.querySelector('input[name="shipping-option"]:checked').value,
+                        payment: document.querySelector('input[name="payment-option"]:checked').value
+                    };
+
+                    console.log("Order submitted:", formData);
+
+                    // Aquí iría la lógica real de procesamiento de pago
+                    // En un entorno real, podrías redirigir a una página de confirmación.
+                });
+            }
+        });
+        
+    </script>
+</body>
+</html>

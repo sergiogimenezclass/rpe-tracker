@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Tea - Hojas Sueltas</title>
+    <!-- Carga de Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración personalizada de Tailwind para fuentes y colores -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-green': '#5A7543', // Color principal del logo y acentos
+                        'secondary-gray': '#3A3A3A', // Color del texto oscuro/fondo del footer
+                        'background-light': '#F5F5F0', // Fondo claro
+                        'accent-beige': '#D4C7B4', // Fondo de la imagen/banner
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Iconos Estrella SVG (para la calificación) -->
+    <style>
+        .star-icon {
+            fill: #FFD700; /* Color dorado para las estrellas */
+            width: 1rem;
+            height: 1rem;
+        }
+    </style>
+</head>
+<body class="font-sans text-secondary-gray bg-background-light">
+
+    <!-- CABECERA y NAVEGACIÓN -->
+    <header class="shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16 bg-white">
+            <!-- Logo -->
+            <div class="flex items-center space-x-8">
+                <a href="index.html" class="flex items-center space-x-2 text-primary-green">
+                    <!-- Icono SVG simple de hoja de té -->
+                    <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                    </svg>
+                </a>
+                <!-- Menú de navegación -->
+                <div class="hidden md:flex space-x-6 text-sm font-medium">
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">Shop</a>
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">Subscribe</a>
+                    <a href="#" class="text-secondary-gray hover:text-primary-green transition duration-150">About</a>
+                </div>
+            </div>
+
+            <!-- Búsqueda -->
+            <div class="flex items-center space-x-4">
+                <div class="relative hidden sm:block">
+                    <input type="text" placeholder="Search product" class="pl-10 pr-4 py-1 border border-gray-300 rounded-full text-sm focus:ring-primary-green focus:border-primary-green" />
+                    <svg class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- CUERPO PRINCIPAL - DETALLE DEL PRODUCTO -->
+    <main class="main-content container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 bg-white p-6 md:p-10 rounded-xl shadow-lg">
+            
+            <!-- Columna 1: Imagen del Producto -->
+            <div class="lg:col-span-1">
+                <!-- Contenedor principal de la imagen (Placeholder adaptado al mockup) -->
+                <div class="w-full h-80 sm:h-96 bg-accent-beige rounded-xl overflow-hidden shadow-xl flex items-center justify-center p-4">
+                    <!-- Placeholder de imagen grande: Taza de té verde con polvo de matcha y batidor -->
+                <img src="https://placehold.co/600x400/D4C7B4/3A3A3A?text=Taza+de+T%C3%A9+Verde+con+Matcha+y+Batidor" 
+                    alt="Green Tea Loose Leaf" class="w-full h-full object-cover rounded-lg">
+                </div>
+            </div>
+
+            <!-- Columna 2: Detalles y Compra -->
+            <div class="lg:col-span-1">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-secondary-gray mb-2">
+                    Green Tea
+                </h1>
+                <p class="text-xl font-medium text-primary-green mb-4">
+                    Loose leaf tea
+                </p>
+
+                <!-- Calificación -->
+                <div class="flex items-center space-x-2 mb-6">
+                    <!-- 5 Estrellas -->
+                    ${'<svg class="star-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>'.repeat(5)}
+                    <span class="text-sm text-gray-500">(423 reviews)</span>
+                </div>
+
+                <!-- Descripción del Producto -->
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    This tea is foris strong robust for strong, less invigorating alc lemoned aroma. It is a popular choice for thos who ertils th ishelmed a aale is os oalin experienct. Gurt hrcriltty Green tes is thoer. Giro cles whit id eeswirat the hot hcs stad ads choice.
+                </p>
+
+                <!-- Opciones de Formato (Hojas sueltas vs. Bolsas) -->
+                <div class="flex space-x-3 mb-6">
+                    <button class="bg-primary-green text-white font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 hover:bg-green-700">
+                        Loose leaf tea
+                    </button>
+                    <!-- El botón de bolsas tiene un fondo gris claro según el mockup -->
+                    <button class="bg-gray-200 text-secondary-gray font-semibold py-3 px-6 rounded-lg shadow-md transition duration-150 hover:bg-gray-300">
+                        Tea bags
+                    </button>
+                </div>
+
+                <!-- Control de Cantidad y Precio -->
+                <div class="flex items-center justify-between border-t border-gray-200 pt-6 mt-6">
+                    <p class="text-sm font-semibold text-gray-700">Quantity</p>
+                    <div class="flex items-center space-x-4">
+                        <!-- Controles de cantidad -->
+                        <div class="flex items-center border border-gray-300 rounded-full">
+                            <button id="qty-minus" class="p-2 text-xl font-bold text-gray-600 hover:text-secondary-gray transition duration-150 rounded-l-full px-4">-</button>
+                            <span id="qty-display" class="font-bold text-lg px-2 w-8 text-center">1</span>
+                            <button id="qty-plus" class="p-2 text-xl font-bold text-gray-600 hover:text-secondary-gray transition duration-150 rounded-r-full px-4">+</button>
+                        </div>
+                        <!-- Precio Total -->
+                        <span id="total-price" class="text-3xl font-extrabold text-secondary-gray">$31</span>
+                    </div>
+                </div>
+
+                <!-- Botón Añadir al carrito -->
+                <button id="add-to-cart" class="w-full bg-primary-green text-white font-bold py-3 mt-6 rounded-lg shadow-xl transition duration-300 hover:bg-green-700" aria-label="Añadir al carrito">
+                    Add to bag
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- SECCIÓN DE PRODUCTOS SIMILARES -->
+    <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h2 class="text-3xl font-extrabold text-secondary-gray mb-8 text-center md:text-left">
+            Shop similar
+        </h2>
+
+        <div id="similar-products-grid" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Las tarjetas de productos similares se insertarán aquí -->
+            <!-- Tarjeta 1 (Jasmine Green Tea) - SIMULADA -->
+            <div class="product-card text-center bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 p-4 pt-6 hover:shadow-xl transition duration-300 cursor-pointer">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center mx-auto mb-4 rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/200x128/90EE90/3A3A3A?text=Jazm%C3%ADn+Hojas" alt="Jasmine Green Tea" class="w-full h-full object-cover">
+                </div>
+                <p class="text-2xl font-bold text-secondary-gray mb-1">$55</p>
+                <h3 class="text-lg font-semibold truncate text-primary-green">Jasmine Green Tea</h3>
+                <p class="text-xs text-gray-500 mt-1">Limited edition</p>
+            </div>
+
+            <!-- Tarjeta 2 (White Tea Tea) - SIMULADA -->
+            <div class="product-card text-center bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 p-4 pt-6 hover:shadow-xl transition duration-300 cursor-pointer">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center mx-auto mb-4 rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/200x128/F0F0F0/3A3A3A?text=T%C3%A9+Blanco+Taza" alt="White Tea Tea" class="w-full h-full object-cover">
+                </div>
+                <p class="text-2xl font-bold text-secondary-gray mb-1">$11</p>
+                <h3 class="text-lg font-semibold truncate text-primary-green">White Tea Tea</h3>
+                <p class="text-xs text-gray-500 mt-1">New in</p>
+            </div>
+            
+            <!-- Tarjeta 3 (Gunpowder Green Tea) - SIMULADA -->
+            <div class="product-card text-center bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 p-4 pt-6 hover:shadow-xl transition duration-300 cursor-pointer">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center mx-auto mb-4 rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/200x128/5A7543/ffffff?text=Gunpowder+Perlas" alt="Gunpowder Green Tea" class="w-full h-full object-cover">
+                </div>
+                <p class="text-2xl font-bold text-secondary-gray mb-1">$19</p>
+                <h3 class="text-lg font-semibold truncate text-primary-green">Gunpowder Green Tea</h3>
+                <p class="text-xs text-gray-500 mt-1">New in</p>
+            </div>
+
+            <!-- Tarjeta 4 (Morning Bundle) - SIMULADA -->
+            <div class="product-card text-center bg-white rounded-xl overflow-hidden shadow-lg border border-gray-100 p-4 pt-6 hover:shadow-xl transition duration-300 cursor-pointer">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center mx-auto mb-4 rounded-lg overflow-hidden">
+                    <img src="https://placehold.co/200x128/5A7543/ffffff?text=Morning+Bundle+Flor" alt="Morning Bundle" class="w-full h-full object-cover">
+                </div>
+                <p class="text-2xl font-bold text-secondary-gray mb-1">$59</p>
+                <h3 class="text-lg font-semibold truncate text-primary-green">Morning Bundle</h3>
+                <p class="text-xs text-gray-500 mt-1">Start your day right</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-secondary-gray text-white mt-12">
+        <!-- Sección de Suscripción -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 border-b border-gray-600">
+            <p class="text-sm mb-4">Let's stay in touch: Sign up to our newsletter</p>
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <input type="email" placeholder="Insert your email address here" class="flex-grow p-3 rounded-lg text-secondary-gray focus:ring-primary-green focus:border-primary-green" />
+                <button class="bg-primary-green hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-150">
+                    Subscribe now
+                </button>
+            </div>
+        </div>
+
+        <!-- Sección de Enlaces y Logo -->
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10 text-sm">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
+                <!-- Columna 1: Logo y Copyright -->
+                <div class="col-span-2 md:col-span-1">
+                    <a href="index.html" class="flex items-center space-x-2 text-primary-green mb-4">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9C5 12.31 7.23 15.11 10.33 16.03L11.5 22L12.5 22L13.67 16.03C16.77 15.11 19 12.31 19 9C19 5.13 15.87 2 12 2ZM12 14C9.79 14 8 12.21 8 10C8 7.79 9.79 6 12 6C14.21 6 16 7.79 16 10C16 12.21 14.21 14 12 14Z"/>
+                        </svg>
+                    </a>
+                    <p class="text-xs text-gray-400">&copy; 2023 The Tea Stop. All rights reserved.</p>
+                </div>
+
+                <!-- Columnas de Enlaces -->
+                <div>
+                    <h3 class="font-semibold mb-3">Help</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms and conditions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">Offer</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Site map</a></li>
+                        <li><a href="#" class="hover:text-white">Tea of the week</a></li>
+                        <li><a href="#" class="hover:text-white">Subscriptions</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white">Customer Service</a></li>
+                        <li><a href="#" class="hover:text-white">Retail Inquiries</a></li>
+                        <li><a href="#" class="hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- LÓGICA DE INTERACCIÓN DEL PRODUCTO ---
+
+        const BASE_PRICE = 31; // Precio base por unidad
+        let currentQuantity = 1;
+        
+        const qtyDisplay = document.getElementById('qty-display');
+        const totalPriceDisplay = document.getElementById('total-price');
+        const qtyMinusButton = document.getElementById('qty-minus');
+        const qtyPlusButton = document.getElementById('qty-plus');
+
+        /**
+         * Actualiza el display de cantidad y el precio total.
+         */
+        function updatePriceAndQuantity() {
+            // Asegura que la cantidad nunca sea menor a 1
+            if (currentQuantity < 1) {
+                currentQuantity = 1;
+            }
+
+            const totalPrice = (BASE_PRICE * currentQuantity);
+
+            qtyDisplay.textContent = currentQuantity;
+            totalPriceDisplay.textContent = `$${totalPrice}`;
+
+            // Deshabilita el botón de menos si la cantidad es 1
+            qtyMinusButton.disabled = (currentQuantity === 1);
+            qtyMinusButton.classList.toggle('opacity-50', currentQuantity === 1);
+            qtyMinusButton.classList.toggle('cursor-not-allowed', currentQuantity === 1);
+        }
+
+        /**
+         * Manejador del evento de clic para aumentar/disminuir la cantidad.
+         * @param {Event} event - El evento de clic.
+         */
+        function handleQuantityChange(event) {
+            const action = event.target.id;
+            
+            if (action === 'qty-plus') {
+                currentQuantity++;
+            } else if (action === 'qty-minus' && currentQuantity > 1) {
+                currentQuantity--;
+            }
+            
+            updatePriceAndQuantity();
+        }
+
+
+        // --- EVENT LISTENERS ---
+
+        window.onload = function() {
+            // Inicializa el precio y la cantidad al cargar la página
+            updatePriceAndQuantity();
+
+            // Asigna los event listeners a los botones de cantidad
+            qtyPlusButton.addEventListener('click', handleQuantityChange);
+            qtyMinusButton.addEventListener('click', handleQuantityChange);
+
+            // Botón "Add to bag": redirige al carrito pasando la cantidad en la query string
+            const addToCartBtn = document.getElementById('add-to-cart');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', () => {
+                    console.log(`Producto añadido al carrito: ${currentQuantity} unidad(es) de Green Tea. Precio total: $${BASE_PRICE * currentQuantity}`);
+                    // Redirige a carrito.html pasando cantidad. Más parámetros (p.e. id) se pueden añadir si se desea.
+                    const qty = encodeURIComponent(currentQuantity);
+                    window.location.href = `carrito.html?qty=${qty}`;
+                });
+            }
+        };
+    </script>
+</body>
+</html>
