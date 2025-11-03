@@ -31,29 +31,7 @@
         
         <!-- BARRA LATERAL -->
         <aside class="sidebar collapse d-lg-block" id="sidebarMenu">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="./index.html">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./atletas.html">Atletas</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="./planes.html">Planes</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./detalle.html">Detalle</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./feedback-rpe.html">Feedback</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./configuracion.html">Configuración</a>
-                </li>
-            </ul>
-            <div class="footer">
-                &copy; 2025 RPE Tracker <span class="ms-2">v0.1.0</span>
-            </div>
+            
         </aside>
 
         <!-- CONTENIDO PRINCIPAL -->
@@ -136,35 +114,7 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Manejador del menú móvil
-        document.addEventListener('DOMContentLoaded', function() {
-            const backdrop = document.querySelector('.sidebar-backdrop');
-            const sidebar = document.getElementById('sidebarMenu');
-            
-            if (!sidebar) return;
-            
-            // Mostrar/ocultar backdrop cuando el menú se abre/cierra
-            sidebar.addEventListener('show.bs.collapse', function () {
-                if (backdrop) backdrop.classList.add('show');
-            });
-            
-            sidebar.addEventListener('hide.bs.collapse', function () {
-                if (backdrop) backdrop.classList.remove('show');
-            });
-            
-            // Cerrar menú al hacer click en un enlace (en móvil)
-            const navLinks = sidebar.querySelectorAll('.nav-link');
-            navLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 992) {
-                        const collapseInstance = bootstrap.Collapse.getInstance(sidebar);
-                        if (collapseInstance) {
-                            collapseInstance.hide();
-                        }
-                    }
-                });
-            });
-        });
+       
     </script>
 <script src="js/estructura.js"></script>
 </body>
