@@ -1,5 +1,5 @@
 let header = function() {
-    fetch("header.html")
+    fetch("../components/header.html")
   .then(response => {
     return response.text()
   })
@@ -11,8 +11,8 @@ let header = function() {
 
 
 
-let sidebar = function() {
-    fetch("sidebar.html")
+let sidebarEntrenador = function() {
+    fetch("../components/sidebar-entrenador.html")
   .then(response => {
     return response.text()
   })
@@ -22,6 +22,15 @@ let sidebar = function() {
 };
 
 
+let sidebarAtleta = function() {
+    fetch("../components/sidebar-atleta.html")
+  .then(response => {
+    return response.text()
+  })
+  .then(data => {
+    document.querySelector(".sidebar").innerHTML = data;
+  });
+};
 
 
 
@@ -59,4 +68,5 @@ let menu = function() {
 
 menu();
 header();
-sidebar();
+sidebarEntrenador();
+sidebarAtleta();
