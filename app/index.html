@@ -361,6 +361,139 @@
     </div>
 
     <script>
+        // ==================== FUNCIONES HELPER PARA LOCALSTORAGE ====================
+        
+        /**
+         * Obtiene todos los usuarios desde localStorage
+         * @returns {Array} Array de usuarios o array vacío si no existen
+         */
+        function getUsers() {
+            const users = localStorage.getItem('rpe-tracker-users');
+            return users ? JSON.parse(users) : [];
+        }
+        
+        /**
+         * Guarda el array de usuarios en localStorage
+         * @param {Array} users - Array de usuarios a guardar
+         */
+        function saveUsers(users) {
+            localStorage.setItem('rpe-tracker-users', JSON.stringify(users));
+        }
+        
+        /**
+         * Busca un usuario por email en localStorage
+         * @param {string} email - Email del usuario a buscar
+         * @returns {Object|null} Usuario encontrado o null si no existe
+         */
+        function findUserByEmail(email) {
+            const users = getUsers();
+            return users.find(user => user.email === email) || null;
+        }
+        
+        /**
+         * Obtiene el usuario actualmente autenticado desde sessionStorage
+         * @returns {Object|null} Usuario actual o null si no hay sesión
+         */
+        function getCurrentUser() {
+            const user = sessionStorage.getItem('rpe-tracker-current-user');
+            return user ? JSON.parse(user) : null;
+        }
+        
+        /**
+         * Guarda el usuario actual en sessionStorage
+         * @param {Object} user - Usuario a guardar como usuario actual
+         */
+        function setCurrentUser(user) {
+            sessionStorage.setItem('rpe-tracker-current-user', JSON.stringify(user));
+        }
+        
+        /**
+         * Busca un usuario por ID
+         * @param {string} userId - ID del usuario a buscar
+         * @returns {Object|null} Usuario encontrado o null si no existe
+         */
+        function getUserById(userId) {
+            const users = getUsers();
+            return users.find(user => user.id === userId) || null;
+        }
+        
+        /**
+         * Actualiza un usuario existente en localStorage
+         * @param {string} userId - ID del usuario a actualizar
+         * @param {Object} updates - Objeto con los campos a actualizar
+         * @returns {boolean} true si se actualizó correctamente, false si no se encontró
+         */
+        function updateUser(userId, updates) {
+            const users = getUsers();
+            const userIndex = users.findIndex(user => user.id === userId);
+            
+            if (userIndex === -1) {
+                return false;
+            }
+            
+            users[userIndex] = { ...users[userIndex], ...updates };
+            saveUsers(users);
+            return true;
+        }
+        
+        /**
+         * Crea los datos por defecto según el tipo de usuario
+         * @param {string} userType - Tipo de usuario: 'atleta' o 'entrenador'
+         * @returns {Object} Objeto con los datos por defecto
+         */
+        function createDefaultUserData(userType) {
+            if (userType === 'atleta') {
+                return {
+                    telefono: null,
+                    nivel: null,
+                    entrenadorId: null,
+                    estadisticas: {
+                        rpePromedio: null,
+                        duracionPromedioSesion: null,
+                        volumen: null,
+                        frecuencia: null
+                    },
+                    notificaciones: {
+                        email: true,
+                        aplicacion: true
+                    },
+                    privacidad: {
+                        perfilPublico: false,
+                        compartirStats: false
+                    },
+                    sesiones: []
+                };
+            } else if (userType === 'entrenador') {
+                return {
+                    emailProfesional: null,
+                    especialidad: null,
+                    certificaciones: null,
+                    atletasAsignados: [],
+                    notificaciones: {
+                        alertasSesionesCompletadas: true,
+                        alertasRPEFueraRango: true,
+                        resumenDiario: false
+                    },
+                    preferenciasPlanes: {
+                        vistaPredeterminadaCalendario: "semanal",
+                        rangoRPEDefecto: "6-8",
+                        autoAsignarPlanes: false
+                    }
+                };
+            }
+            return {};
+        }
+        
+        /**
+         * Genera un ID único para el usuario
+         * @returns {string} ID único generado
+         */
+        function generateUserId() {
+            return Date.now().toString(36) + Math.random().toString(36).slice(2);
+        }
+
+        // ==================== INICIALIZACIÓN ====================
+        
         document.addEventListener('DOMContentLoaded', () => {
             const loginView = document.getElementById('login-view');
             const registerView = document.getElementById('register-view');
@@ -440,64 +573,151 @@
                 showView('login');
             });
 
-            // ---------------- Simulación de Envíos de Formulario ----------------
+            // ---------------- Manejo de Formularios ----------------
             
-            // 1. Simulación de envío de formulario de LOGIN
+            // 1. Manejo de formulario de LOGIN
             loginForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const email = document.getElementById('email').value;
+                const email = document.getElementById('email').value.trim().toLowerCase();
                 const password = document.getElementById('password').value;
                 
-                console.log(`[LOGIN] Intentando iniciar sesión con: ${email} / ${password}`);
+                console.log(`[LOGIN] Intentando iniciar sesión con: ${email}`);
 
-                if (email && password) {
-                     console.log("[LOGIN] Inicio de sesión simulado exitoso. Redirigiendo...");
-                     
-                     // Para demostración, usaremos estos usuarios de prueba:
-                     // atleta@test.com -> dashboard de atleta
-                     // entrenador@test.com -> dashboard de entrenador
-                     if (email === 'atleta@test.com') {
-                         window.location.href = 'atletas/index.html';
-                     } else if (email === 'entrenador@test.com') {
-                         window.location.href = 'entrenador/index.html';
-                     } else {
-                         alert('Usuario no reconocido. Por favor use atleta@test.com o entrenador@test.com para la demo.');
-                     }
+                if (!email || !password) {
+                    console.error("[LOGIN] Por favor, complete ambos campos.");
+                    alert('Por favor, complete todos los campos.');
+                    return;
+                }
+
+                // Buscar usuario en localStorage
+                let user = findUserByEmail(email);
+                
+                // Si no se encuentra en localStorage, verificar usuarios demo
+                if (!user) {
+                    // Verificar usuarios demo hardcodeados
+                    if (email === 'atleta@test.com' && password === 'demo123') {
+                        // Crear objeto temporal para usuario demo atleta
+                        user = {
+                            id: 'demo-atleta',
+                            email: 'atleta@test.com',
+                            password: 'demo123',
+                            userType: 'atleta',
+                            nombre: 'Demo',
+                            apellido: 'Atleta',
+                            createdAt: new Date().toISOString(),
+                            atleta: createDefaultUserData('atleta')
+                        };
+                    } else if (email === 'entrenador@test.com' && password === 'demo123') {
+                        // Crear objeto temporal para usuario demo entrenador
+                        user = {
+                            id: 'demo-entrenador',
+                            email: 'entrenador@test.com',
+                            password: 'demo123',
+                            userType: 'entrenador',
+                            nombre: 'Demo',
+                            apellido: 'Entrenador',
+                            createdAt: new Date().toISOString(),
+                            entrenador: createDefaultUserData('entrenador')
+                        };
+                    } else {
+                        // Usuario no encontrado
+                        alert('Email o contraseña incorrectos');
+                        return;
+                    }
                 } else {
-                     console.error("[LOGIN] Por favor, complete ambos campos.");
-                     alert('Por favor, complete todos los campos.');
+                    // Usuario encontrado en localStorage, verificar contraseña
+                    if (user.password !== password) {
+                        alert('Email o contraseña incorrectos');
+                        return;
+                    }
+                }
+
+                // Credenciales correctas
+                console.log("[LOGIN] Inicio de sesión exitoso. Redirigiendo...");
+                
+                // Guardar usuario actual en sessionStorage
+                setCurrentUser(user);
+                
+                // Redirigir según userType
+                if (user.userType === 'atleta') {
+                    window.location.href = 'atletas/index.html';
+                } else if (user.userType === 'entrenador') {
+                    window.location.href = 'entrenador/index.html';
+                } else {
+                    alert('Tipo de usuario no reconocido');
                 }
             });
 
-            // 2. Simulación de envío de formulario de REGISTRO
+            // 2. Manejo de formulario de REGISTRO
             registerForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const nombre = document.getElementById('register-nombre').value;
-                const apellido = document.getElementById('register-apellido').value;
-                const email = document.getElementById('register-email').value;
+                const nombre = document.getElementById('register-nombre').value.trim();
+                const apellido = document.getElementById('register-apellido').value.trim();
+                const email = document.getElementById('register-email').value.trim().toLowerCase();
                 const password = document.getElementById('register-password').value;
                 const confirmPassword = document.getElementById('register-password-confirm').value;
                 const userType = document.querySelector('input[name="userType"]:checked')?.value;
 
+                // Validar que las contraseñas coincidan
                 if (password !== confirmPassword) {
                     alert('Las contraseñas no coinciden');
                     return;
                 }
 
+                // Validar que se haya seleccionado tipo de usuario
                 if (!userType) {
                     alert('Por favor seleccione si es Atleta o Entrenador');
                     return;
                 }
 
-                console.log('[REGISTER] Registro simulado:', {
+                // Verificar si el email ya existe
+                const existingUser = findUserByEmail(email);
+                if (existingUser) {
+                    alert('Este email ya está registrado');
+                    return;
+                }
+
+                // Crear objeto usuario con estructura completa
+                const userId = generateUserId();
+                const defaultData = createDefaultUserData(userType);
+                
+                const newUser = {
+                    id: userId,
+                    email: email,
+                    password: password,
+                    userType: userType,
+                    createdAt: new Date().toISOString(),
+                    nombre: nombre,
+                    apellido: apellido
+                };
+
+                // Agregar datos específicos según el tipo de usuario
+                if (userType === 'atleta') {
+                    newUser.atleta = defaultData;
+                } else if (userType === 'entrenador') {
+                    newUser.entrenador = defaultData;
+                }
+
+                // Guardar usuario en localStorage
+                const users = getUsers();
+                users.push(newUser);
+                saveUsers(users);
+
+                console.log('[REGISTER] Usuario registrado exitosamente:', {
+                    id: userId,
                     nombre,
                     apellido,
                     email,
                     userType
                 });
 
-                // Simular registro exitoso
+                // Mostrar mensaje de éxito y cambiar a vista de login
                 alert('Registro exitoso! Por favor inicie sesión.');
+                
+                // Limpiar formulario
+                registerForm.reset();
+                
+                // Cambiar a vista de login
                 showView('login');
             });
 
