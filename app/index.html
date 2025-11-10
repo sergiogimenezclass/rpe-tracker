@@ -188,6 +188,20 @@
             padding-left: 0.5rem;
         }
 
+        /* Estilos para campos readonly */
+        .form-control[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        /* Estilos para campo de código de verificación */
+        #verify-code {
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -353,6 +367,25 @@
              <a href="#" class="action-link" id="back-to-login-link">Volver a Iniciar Sesión</a>
         </div>
 
+        <!-- ======================= VISTA DE CÓDIGO DE VERIFICACIÓN ======================= -->
+        <div id="verify-code-view" style="display: none;">
+            <h2 class="h4 fw-bold mb-3" style="color: var(--text-dark);">Código de Verificación</h2>
+            <p class="mb-4" style="color: var(--text-dark); font-size: 0.95rem;">
+                Ingresa el código de verificación que enviamos a tu email y tu nueva contraseña.
+            </p>
+            
+            <form id="verify-code-form">
+                <input type="email" class="form-control mb-3" placeholder="Email" id="verify-email" required readonly>
+                <input type="text" class="form-control mb-3" placeholder="Código de 6 dígitos" id="verify-code" maxlength="6" pattern="[0-9]{6}" required>
+                <small class="text-muted d-block mb-3">Ingresa el código de 6 dígitos que recibiste.</small>
+                <input type="password" class="form-control mb-3" placeholder="Nueva contraseña" id="verify-new-password" required>
+                <input type="password" class="form-control mb-3" placeholder="Confirmar nueva contraseña" id="verify-confirm-password" required>
+                
+                <button type="submit" class="btn btn-main" id="btn-verify-submit">Cambiar Contraseña</button>
+            </form>
+            
+            <a href="#" class="action-link" id="back-to-recover-link">Volver</a>
+        </div>
 
         <!-- Footer de la tarjeta (Común a ambas vistas) -->
         <div class="card-footer-info">
@@ -506,6 +539,73 @@
         }
 
         /**
+         * Genera un código de verificación de 6 dígitos
+         * @returns {string} Código de 6 dígitos
+         */
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        /**
+         * Guarda un código de verificación en localStorage
+         * @param {string} email - Email del usuario
+         * @param {string} code - Código de verificación
+         */
+        function saveVerificationCode(email, code) {
+            const verificationData = {
+                email: email,
+                code: code,
+                expiresAt: Date.now() + (10 * 60 * 1000) // 10 minutos
+            };
+            localStorage.setItem('rpe-tracker-verification-code', JSON.stringify(verificationData));
+        }
+
+        /**
+         * Verifica si un código es válido
+         * @param {string} email - Email del usuario
+         * @param {string} code - Código a verificar
+         * @returns {boolean} true si el código es válido
+         */
+        function verifyCode(email, code) {
+            const stored = localStorage.getItem('rpe-tracker-verification-code');
+            if (!stored) return false;
+            
+            const verificationData = JSON.parse(stored);
+            
+            // Verificar que no haya expirado
+            if (Date.now() > verificationData.expiresAt) {
+                localStorage.removeItem('rpe-tracker-verification-code');
+                return false;
+            }
+            
+            // Verificar email y código
+            return verificationData.email === email && verificationData.code === code;
+        }
+
+        /**
+         * Cambia la contraseña de un usuario
+         * @param {string} email - Email del usuario
+         * @param {string} newPassword - Nueva contraseña
+         * @returns {boolean} true si se cambió correctamente
+         */
+        function changeUserPassword(email, newPassword) {
+            const users = getUsers();
+            const userIndex = users.findIndex(user => user.email === email);
+            
+            if (userIndex === -1) {
+                return false;
+            }
+            
+            users[userIndex].password = newPassword;
+            saveUsers(users);
+            
+            // Eliminar código de verificación usado
+            localStorage.removeItem('rpe-tracker-verification-code');
+            
+            return true;
+        }
+
+        /**
          * Muestra un toast de Bootstrap
          * @param {string} message - Mensaje a mostrar
          * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
@@ -577,18 +677,110 @@
             toast.show();
         }
 
+        /**
+         * Muestra un modal con el código de verificación (solo para simulación)
+         * @param {string} email - Email del usuario
+         * @param {string} code - Código de verificación
+         * @param {Function} showViewCallback - Función callback para cambiar de vista
+         */
+        function showVerificationCodeModal(email, code, showViewCallback) {
+            // Verificar que Bootstrap esté cargado
+            if (typeof bootstrap === 'undefined') {
+                alert(`Código de verificación para ${email}: ${code}\n\nEste código expira en 10 minutos.`);
+                if (showViewCallback) {
+                    setTimeout(() => {
+                        document.getElementById('recover-email').value = email;
+                        document.getElementById('recover-email-confirm').value = email;
+                        showViewCallback('verify-code');
+                        document.getElementById('verify-email').value = email;
+                    }, 100);
+                }
+                return;
+            }
+            
+            // Crear modal dinámicamente
+            const modalHtml = `
+                <div class="modal fade" id="verificationCodeModal" tabindex="-1" aria-labelledby="verificationCodeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-info text-white">
+                                <h5 class="modal-title" id="verificationCodeModalLabel">Código de Verificación</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p><strong>Email:</strong> ${email}</p>
+                                <p><strong>Código de verificación:</strong></p>
+                                <div class="alert alert-info text-center fs-2 fw-bold mb-3">
+                                    ${code}
+                                </div>
+                                <p class="text-muted small">Este código expira en 10 minutos.</p>
+                                <div class="alert alert-warning small mb-0">
+                                    <strong>⚠️ Simulación:</strong> En producción, este código se enviaría por email.
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-primary" id="continue-to-verify-btn" data-bs-dismiss="modal">
+                                    Continuar con el código
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Remover modal anterior si existe
+            const existingModal = document.getElementById('verificationCodeModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            // Agregar modal al body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Mostrar modal
+            const modalElement = document.getElementById('verificationCodeModal');
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            // Manejar el botón de continuar
+            document.getElementById('continue-to-verify-btn').addEventListener('click', function() {
+                // Pre-llenar el email en la vista de verificación
+                document.getElementById('recover-email').value = email;
+                document.getElementById('recover-email-confirm').value = email;
+                if (showViewCallback) {
+                    showViewCallback('verify-code');
+                }
+                // Esperar un momento para que la vista se muestre antes de pre-llenar
+                setTimeout(() => {
+                    const verifyEmailInput = document.getElementById('verify-email');
+                    if (verifyEmailInput) {
+                        verifyEmailInput.value = email;
+                    }
+                }, 100);
+            });
+            
+            // Limpiar modal cuando se cierre
+            modalElement.addEventListener('hidden.bs.modal', function () {
+                this.remove();
+            });
+        }
+
         // ==================== INICIALIZACIÓN ====================
         
         document.addEventListener('DOMContentLoaded', () => {
             const loginView = document.getElementById('login-view');
             const registerView = document.getElementById('register-view');
             const forgotPasswordView = document.getElementById('forgot-password-view');
+            const verifyCodeView = document.getElementById('verify-code-view');
             const forgotPasswordLink = document.getElementById('forgot-password-link');
             const backToLoginLink = document.getElementById('back-to-login-link');
+            const backToRecoverLink = document.getElementById('back-to-recover-link');
             
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
             const recoverForm = document.getElementById('recover-form');
+            const verifyCodeForm = document.getElementById('verify-code-form');
             
             // Tabs de la vista de login
             const tabLogin = document.getElementById('tab-login');
@@ -599,14 +791,15 @@
             const tabRegisterReg = document.getElementById('tab-register-reg');
 
             /**
-             * Alterna entre las vistas de Login, Registro y Recuperación de Contraseña.
-             * @param {string} viewId - 'login', 'register' o 'forgot'.
+             * Alterna entre las vistas de Login, Registro, Recuperación de Contraseña y Verificación de Código.
+             * @param {string} viewId - 'login', 'register', 'forgot' o 'verify-code'.
              */
             function showView(viewId) {
                 // Oculta todas las vistas primero
                 loginView.style.display = 'none';
                 registerView.style.display = 'none';
                 forgotPasswordView.style.display = 'none';
+                verifyCodeView.style.display = 'none';
 
                 // Muestra la vista solicitada
                 switch(viewId) {
@@ -626,6 +819,9 @@
                         break;
                     case 'forgot':
                         forgotPasswordView.style.display = 'block';
+                        break;
+                    case 'verify-code':
+                        verifyCodeView.style.display = 'block';
                         break;
                 }
             }
@@ -657,6 +853,32 @@
                 e.preventDefault();
                 showView('login');
             });
+
+            backToRecoverLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showView('forgot');
+            });
+
+            // Validación en tiempo real para el campo de código
+            const verifyCodeInput = document.getElementById('verify-code');
+            if (verifyCodeInput) {
+                verifyCodeInput.addEventListener('input', function(e) {
+                    // Solo permitir números
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                    // Limitar a 6 dígitos
+                    if (this.value.length > 6) {
+                        this.value = this.value.slice(0, 6);
+                    }
+                });
+
+                // Prevenir pegar texto no numérico
+                verifyCodeInput.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                    const numbersOnly = pastedText.replace(/[^0-9]/g, '').slice(0, 6);
+                    this.value = numbersOnly;
+                });
+            }
 
             // ---------------- Manejo de Formularios ----------------
             
@@ -806,27 +1028,81 @@
                 showView('login');
             });
 
-            // 3. Simulación de envío de formulario de RECUPERACIÓN
+            // 3. Manejo de formulario de RECUPERACIÓN
             recoverForm.addEventListener('submit', (e) => {
-                 e.preventDefault();
-                 const email = document.getElementById('recover-email').value;
-                 const confirmEmail = document.getElementById('recover-email-confirm').value;
+                e.preventDefault();
+                const email = document.getElementById('recover-email').value.trim().toLowerCase();
+                const confirmEmail = document.getElementById('recover-email-confirm').value.trim().toLowerCase();
 
-                 if (email !== confirmEmail) {
-                    console.error("[RECOVER] Los emails no coinciden.");
+                if (email !== confirmEmail) {
+                    showToast('Los emails no coinciden.', 'error');
                     return;
-                 }
-                 
-                 console.log(`[RECOVER] Enviando instrucciones a: ${email}`);
-                 
-                 if (email) {
-                      // Simular envío exitoso y volver al login
-                      console.log("[RECOVER] Instrucciones enviadas (simulación). Volviendo a Iniciar Sesión.");
-                      // Aquí iría la llamada real a la función de Firebase para enviar el correo
-                      showView('login');
-                 } else {
-                      console.error("[RECOVER] Por favor, ingrese un email.");
-                 }
+                }
+                
+                // Verificar que el email existe en localStorage
+                const user = findUserByEmail(email);
+                if (!user) {
+                    showToast('Este email no está registrado.', 'error');
+                    return;
+                }
+                
+                // Generar código de verificación
+                const verificationCode = generateVerificationCode();
+                saveVerificationCode(email, verificationCode);
+                
+                // Mostrar código en modal (para simulación - en producción se enviaría por email)
+                showVerificationCodeModal(email, verificationCode, showView);
+                
+                console.log(`[RECOVER] Código de verificación generado para ${email}: ${verificationCode}`);
+            });
+
+            // 4. Manejo de formulario de VERIFICACIÓN DE CÓDIGO
+            verifyCodeForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('verify-email').value.trim().toLowerCase();
+                const code = document.getElementById('verify-code').value.trim();
+                const newPassword = document.getElementById('verify-new-password').value;
+                const confirmPassword = document.getElementById('verify-confirm-password').value;
+                
+                // Validar formato del código
+                if (code.length !== 6 || !/^\d+$/.test(code)) {
+                    showToast('El código debe ser de 6 dígitos numéricos.', 'error');
+                    return;
+                }
+                
+                // Validar que las contraseñas coincidan
+                if (newPassword !== confirmPassword) {
+                    showToast('Las contraseñas no coinciden.', 'error');
+                    return;
+                }
+                
+                // Validar que la contraseña no esté vacía
+                if (!newPassword || newPassword.length < 1) {
+                    showToast('La contraseña no puede estar vacía.', 'error');
+                    return;
+                }
+                
+                // Validar código
+                if (!verifyCode(email, code)) {
+                    showToast('Código inválido o expirado. Por favor, solicita un nuevo código.', 'error');
+                    return;
+                }
+                
+                // Cambiar contraseña
+                if (changeUserPassword(email, newPassword)) {
+                    showToast('Contraseña cambiada exitosamente. Puedes iniciar sesión ahora.', 'success', 'Éxito');
+                    
+                    // Limpiar formularios
+                    recoverForm.reset();
+                    verifyCodeForm.reset();
+                    
+                    // Pequeño delay antes de cambiar de vista para que se vea el toast
+                    setTimeout(() => {
+                        showView('login');
+                    }, 500);
+                } else {
+                    showToast('Error al cambiar la contraseña. Por favor, intenta de nuevo.', 'error');
+                }
             });
         });
     </script>
