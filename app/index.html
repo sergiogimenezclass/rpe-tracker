@@ -202,6 +202,19 @@
             font-weight: 600;
         }
 
+        .modal-header {
+            background-color: var(--accent-hover);
+        }
+
+        .alert {
+            background-color: var(--border-color);
+        }
+
+        .modal-footer .btn-primary {
+            background-color: var(--accent-hover);
+            border-color: var(--accent-orange);
+        }
+
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -703,20 +716,18 @@
                 <div class="modal fade" id="verificationCodeModal" tabindex="-1" aria-labelledby="verificationCodeModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
-                            <div class="modal-header bg-info text-white">
+                            <div class="modal-header text-white">
                                 <h5 class="modal-title" id="verificationCodeModalLabel">Código de Verificación</h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <p><strong>Email:</strong> ${email}</p>
                                 <p><strong>Código de verificación:</strong></p>
-                                <div class="alert alert-info text-center fs-2 fw-bold mb-3">
+                                <div class="alert text-center fs-2 fw-bold mb-3">
                                     ${code}
                                 </div>
                                 <p class="text-muted small">Este código expira en 10 minutos.</p>
-                                <div class="alert alert-warning small mb-0">
-                                    <strong>⚠️ Simulación:</strong> En producción, este código se enviaría por email.
-                                </div>
+                                
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
