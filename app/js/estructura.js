@@ -66,7 +66,8 @@ let menu = function() {
         });
 }
 
-menu();
 header();
+menu();
+
 sidebarEntrenador();
 sidebarAtleta();
