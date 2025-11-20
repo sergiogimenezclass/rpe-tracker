@@ -5,6 +5,7 @@ let header = function() {
   })
   .then(data => {
     document.querySelector(".top-navbar").innerHTML = data;
+    window.dispatchEvent(new CustomEvent('fragment:ready', { detail: { id: 'header' } }));
   });
 
 };
