@@ -67,8 +67,23 @@ let menu = function() {
         });
 }
 
+let role = function(){
+    let role = sessionStorage.getItem("rpe-tracker-current-user");
+    console.log("role y usuario",role);
+    role = JSON.parse(role);
+    console.log(role.userType);
+    if (role.userType
+ == "entrenador") {
+        sidebarEntrenador();
+        console.log("entrenador menu");
+    } else {
+        sidebarAtleta();
+        console.log("atleta menu");
+    }
+}
+
+role();
+
 header();
 menu();
 
-sidebarEntrenador();
-sidebarAtleta();

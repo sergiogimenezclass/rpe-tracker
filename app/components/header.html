@@ -13,7 +13,34 @@
     <div class="vr d-none d-md-inline"></div>
     <a href="#" class="me-3"><i class="bi bi-gear-fill fs-5"></i></a>
     <div class="vr d-none d-md-inline"></div>
-    <a href="../index.html" class="ms-3 text-danger" title="Cerrar Sesión">
+    <a href="#" id="logout-link" class="ms-3 text-danger" title="Cerrar Sesión">
         <i class="bi bi-power fs-5"></i>
     </a>
+</div>
+
+<script>
+    // Listener para el enlace de cerrar sesión. Usa logoutRpeTracker si está disponible.
+    (function () {
+        const logoutEl = document.getElementById('logout-link');
+        if (!logoutEl) return;
+
+        logoutEl.addEventListener('click', function (e) {
+            e.preventDefault();
+            // Si la función centralizada está expuesta, usarla
+            if (typeof window.logoutRpeTracker === 'function') {
+                // Ajustar la ruta según la ubicación del header (desde páginas internas usar '../index.html')
+                window.logoutRpeTracker('../index.html');
+                return;
+            }
+
+            // Fallback: eliminar la key y redirigir
+            try {
+                sessionStorage.removeItem('rpe-tracker-current-user');
+            } catch (err) {
+                console.error('Error al eliminar sesión (fallback):', err);
+            }
+            window.location.href = '../index.html';
+        });
+    })();
+</script>
 </div>
