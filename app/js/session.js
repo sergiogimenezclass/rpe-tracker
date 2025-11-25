@@ -213,7 +213,7 @@ function createDefaultAtletaData() {
  * @param {string} entrenadorId - ID del entrenador propietario
  * @returns {Object|null} Atleta creado o null si hay error
  */
-function crearAtletaConUsuario(nombre, email, contrasena, entrenadorId) {
+function crearAtletaConUsuario(nombre, email, contrasena, entrenadorId, apellido = '') {
     const users = getUsers();
     
     // Validar email único
@@ -234,7 +234,7 @@ function crearAtletaConUsuario(nombre, email, contrasena, entrenadorId) {
         userType: 'atleta',
         createdAt: new Date().toISOString(),
         nombre: nombre,
-        apellido: '', // campo consistente con estructura de registro
+        apellido: apellido || '', // ahora sí se guarda el apellido
         atleta: defaultData // datos específicos de atleta
     };
     

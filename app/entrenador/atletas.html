@@ -72,6 +72,24 @@
     </div>
 
     <!-- Modal crear/editar atleta -->
+        <!-- Modal de confirmación para asignar atleta -->
+        <div class="modal fade" id="confirmAsignarModal" tabindex="-1" aria-labelledby="confirmAsignarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                                <div class="modal-header bg-white text-dark">
+                                    <h5 class="modal-title text-dark" id="confirmAsignarModalLabel">Confirmar asignación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body bg-white text-dark" id="confirmAsignarModalBody">
+                                    ¿Deseas asignar este atleta a tu cuenta?
+                                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-success" id="btnConfirmAsignar">Asignar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     <div class="modal fade" id="atletaModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -83,7 +101,11 @@
                     <form id="atletaForm">
                         <div class="mb-3">
                             <label for="atletaNombre" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="atletaNombre" placeholder="Ej: Juan Pérez" required>
+                            <input type="text" class="form-control" id="atletaNombre" placeholder="Ej: Juan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="atletaApellido" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="atletaApellido" placeholder="Ej: Pérez">
                         </div>
                         <div class="mb-3">
                             <label for="atletaEmail" class="form-label">Email</label>
@@ -308,12 +330,13 @@
         }
 
         atletaEditandoId = atletaId;
-        document.getElementById('atletaNombre').value = atleta.nombre;
-        document.getElementById('atletaEmail').value = atleta.email;
-        document.getElementById('atletaContrasena').value = atleta.password;
-        document.getElementById('atletaModalTitle').textContent = 'Editar Atleta';
-        document.getElementById('atletaContrasena').required = false;
-        new bootstrap.Modal(document.getElementById('atletaModal')).show();
+    document.getElementById('atletaNombre').value = atleta.nombre;
+    document.getElementById('atletaApellido').value = atleta.apellido || '';
+    document.getElementById('atletaEmail').value = atleta.email;
+    document.getElementById('atletaContrasena').value = atleta.password;
+    document.getElementById('atletaModalTitle').textContent = 'Editar Atleta';
+    document.getElementById('atletaContrasena').required = false;
+    new bootstrap.Modal(document.getElementById('atletaModal')).show();
     }
 
     /**
@@ -321,9 +344,10 @@
      */
     function guardarAtleta() {
         const nombre = document.getElementById('atletaNombre').value.trim();
+        const apellido = document.getElementById('atletaApellido').value.trim();
         const email = document.getElementById('atletaEmail').value.trim();
         const contrasena = document.getElementById('atletaContrasena').value;
-        
+
         if (!nombre || !email || !contrasena) {
             showToastAtletas('Completa todos los campos requeridos', 'warning');
             return;
@@ -335,12 +359,13 @@
             // Modo edición
             resultado = actualizarAtleta(atletaEditandoId, {
                 nombre: nombre,
+                apellido: apellido,
                 email: email,
                 password: contrasena
             });
         } else {
             // Modo creación
-            resultado = crearAtletaConUsuario(nombre, email, contrasena, usuarioLogueado.id) !== null;
+            resultado = crearAtletaConUsuario(nombre, email, contrasena, usuarioLogueado.id, apellido) !== null;
         }
 
         if (resultado) {
@@ -373,16 +398,43 @@
     /**
      * Asignar un atleta sin entrenador al entrenador actual
      */
+    // Variables temporales para asignación
+    let atletaAsignarId = null;
+    let atletaAsignarNombre = null;
+
     function asignarAtleta(atletaId, nombreAtleta) {
-        if (confirm(`¿Deseas asignar a ${nombreAtleta} como tu atleta?`)) {
-            if (asignarAtletaAEntrenador(atletaId, usuarioLogueado.id)) {
-                showToastAtletas(`${nombreAtleta} ha sido asignado a tu cuenta`, 'success', 'Asignación completada');
-                cargarAtletas();
-            } else {
-                showToastAtletas('Error al asignar atleta. Puede que ya tenga un entrenador asignado.', 'error');
-            }
-        }
+        atletaAsignarId = atletaId;
+        atletaAsignarNombre = nombreAtleta;
+        // Actualizar el texto del modal
+        const body = document.getElementById('confirmAsignarModalBody');
+        body.textContent = `¿Deseas asignar a ${nombreAtleta} como tu atleta?`;
+        // Mostrar el modal
+        const modal = new bootstrap.Modal(document.getElementById('confirmAsignarModal'));
+        modal.show();
     }
+
+    // Confirmar asignación al hacer click en el botón del modal
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnConfirmAsignar = document.getElementById('btnConfirmAsignar');
+        if (btnConfirmAsignar) {
+            btnConfirmAsignar.addEventListener('click', function() {
+                if (atletaAsignarId && atletaAsignarNombre) {
+                    if (asignarAtletaAEntrenador(atletaAsignarId, usuarioLogueado.id)) {
+                        showToastAtletas(`${atletaAsignarNombre} ha sido asignado a tu cuenta`, 'success', 'Asignación completada');
+                        cargarAtletas();
+                    } else {
+                        showToastAtletas('Error al asignar atleta. Puede que ya tenga un entrenador asignado.', 'error');
+                    }
+                }
+                // Cerrar el modal
+                const modalEl = document.getElementById('confirmAsignarModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                atletaAsignarId = null;
+                atletaAsignarNombre = null;
+            });
+        }
+    });
 
     /**
      * Filtrar tabla por búsqueda
