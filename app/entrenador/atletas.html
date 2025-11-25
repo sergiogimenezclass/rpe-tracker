@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RPE Tracker Dashboard</title>
 
     <script>
@@ -20,6 +20,62 @@
 
     <link rel="stylesheet" href="../styles/styles.css">
     <link rel="stylesheet" href="../styles/planes.css">
+    <style>
+        /* Hacer que las celdas de la tabla puedan hacer wrap en pantallas pequeñas
+           y evitar que el contenido fuerce un ancho mayor que la pantalla. */
+        @media (max-width: 767.98px) {
+            .table-responsive table td,
+            .table-responsive table th {
+                white-space: normal !important;
+                word-break: break-word;
+            }
+            /* Opcional: tablas más compactas en móvil */
+            .table-responsive table.table-sm td,
+            .table-responsive table.table-sm th {
+                padding: .3rem .4rem;
+            }
+        }
+        /* Estilos para tarjetas móvil: evitar que los iconos se pisen
+           y truncar texto largo en el lado izquierdo. */
+        .atleta-card .card-body {
+            padding: .75rem;
+        }
+        .atleta-card .card-body .card-left {
+            min-width: 0; /* importante para que flex items puedan encoger */
+            overflow: hidden;
+        }
+        .atleta-card .card-body .card-left .card-title {
+            margin: 0 0 .25rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70vw; /* ocupa la mayor parte del ancho disponible en móvil */
+        }
+        .atleta-card .card-body .card-left .card-subtitle {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 70vw;
+        }
+        .atleta-card .card-actions {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: .3rem;
+            min-width: 72px; /* asegura espacio para botones */
+        }
+        .atleta-card .card-actions .btn {
+            white-space: nowrap;
+        }
+        @media (min-width: 576px) {
+            .atleta-card .card-body .card-left .card-title,
+            .atleta-card .card-body .card-left .card-subtitle {
+                max-width: 50vw;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -49,9 +105,9 @@
                 <input type="text" class="form-control" id="inputBuscar" placeholder="Buscar por nombre o email...">
             </div>
 
-            <!-- Tabla de atletas -->
-            <div class="table-responsive">
-                <table class="table table-hover">
+            <!-- Tabla de atletas (visible en md+) -->
+            <div class="table-responsive d-none d-md-block">
+                <table class="table table-hover table-sm">
                     <thead class="table-light">
                         <tr>
                             <th>Nombre</th>
@@ -68,24 +124,45 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Contenedor de tarjetas para móvil -->
+            <div id="atletasCardsContainer" class="d-block d-md-none"></div>
         </main>
     </div>
 
-    <!-- Modal crear/editar atleta -->
+        <!-- Modales de confirmación y formulario de atleta -->
         <!-- Modal de confirmación para asignar atleta -->
         <div class="modal fade" id="confirmAsignarModal" tabindex="-1" aria-labelledby="confirmAsignarModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                                <div class="modal-header bg-white text-dark">
-                                    <h5 class="modal-title text-dark" id="confirmAsignarModalLabel">Confirmar asignación</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                </div>
-                                <div class="modal-body bg-white text-dark" id="confirmAsignarModalBody">
-                                    ¿Deseas asignar este atleta a tu cuenta?
-                                </div>
+                    <div class="modal-header bg-white text-dark">
+                        <h5 class="modal-title text-dark" id="confirmAsignarModalLabel">Confirmar asignación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body bg-white text-dark" id="confirmAsignarModalBody">
+                        ¿Deseas asignar este atleta a tu cuenta?
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="button" class="btn btn-success" id="btnConfirmAsignar">Asignar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de confirmación para eliminar atleta -->
+        <div class="modal fade" id="confirmEliminarModal" tabindex="-1" aria-labelledby="confirmEliminarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-white text-dark">
+                        <h5 class="modal-title" id="confirmEliminarModalLabel">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body bg-white text-dark" id="confirmEliminarModalBody">
+                        ¿Estás seguro de que deseas eliminar este atleta? Esta acción no se puede deshacer.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="btnConfirmEliminar">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -140,7 +217,7 @@
 <script src="../js/session.js"></script>
 
     <!-- Contenedor para Toasts (misma configuración que login) -->
-    <div class="toast-container top-0 start-50 translate-middle-x" style="z-index: 9999;">
+    <div class="toast-container top-0 start-50 translate-middle-x" style="z-index: 1045;">
         <div id="toastNotification" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header">
                 <strong class="me-auto" id="toastTitle">Notificación</strong>
@@ -261,6 +338,7 @@
     function cargarAtletas() {
         atletasActuales = getAtletasDelEntrenador(usuarioLogueado.id);
         renderizarTabla(atletasActuales);
+        renderizarTarjetas(atletasActuales);
     }
 
     /**
@@ -304,6 +382,48 @@
                         </button>
                     </td>
                 </tr>
+            `;
+        }).join('');
+    }
+
+    /**
+     * Renderizar tarjetas para vista móvil
+     * @param {Array} atletas
+     */
+    function renderizarTarjetas(atletas) {
+        const container = document.getElementById('atletasCardsContainer');
+        if (!container) return;
+
+        if (atletas.length === 0) {
+            container.innerHTML = '<div class="text-center text-muted py-4">No hay atletas registrados</div>';
+            return;
+        }
+
+        container.innerHTML = atletas.map(atleta => {
+            const fechaCreacion = new Date(atleta.createdAt).toLocaleDateString('es-AR');
+            const nombreCompleto = atleta.nombre + (atleta.apellido ? ' ' + atleta.apellido : '');
+            const sinAsignar = atleta.atleta?.entrenadorId === null;
+
+            return `
+                <div class="card mb-3 atleta-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="card-left">
+                                <h6 class="card-title mb-1">${nombreCompleto}</h6>
+                                <p class="card-subtitle text-muted mb-1">${atleta.email}</p>
+                                <div>${sinAsignar ? '<span class="badge bg-warning text-dark">Sin asignar</span>' : '<span class="badge bg-success">Asignado</span>'}</div>
+                            </div>
+                            <div class="card-actions">
+                                ${sinAsignar ? `<button class="btn btn-sm btn-success" onclick="asignarAtleta('${atleta.id}', '${nombreCompleto}')"><i class="bi bi-check-lg"></i></button>` : ''}
+                                <div>
+                                    <button class="btn btn-sm btn-outline-primary me-1" onclick="abrirModalEditar('${atleta.id}')"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar('${atleta.id}', '${nombreCompleto}')"><i class="bi bi-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="text-muted d-block mt-2">Creado: ${fechaCreacion}</small>
+                    </div>
+                </div>
             `;
         }).join('');
     }
@@ -385,14 +505,13 @@
      * Confirmar eliminación de atleta
      */
     function confirmarEliminar(atletaId, nombre) {
-        if (confirm(`¿Estás seguro de que deseas eliminar a ${nombre}? Esta acción no se puede deshacer.`)) {
-            if (eliminarAtleta(atletaId)) {
-                showToastAtletas(`${nombre} ha sido eliminado exitosamente`, 'success', 'Atleta eliminado');
-                cargarAtletas();
-            } else {
-                showToastAtletas('Error al eliminar atleta. Intenta de nuevo.', 'error');
-            }
-        }
+        // Abrir modal de confirmación en lugar de confirm()
+        atletaEliminarId = atletaId;
+        atletaEliminarNombre = nombre;
+        const body = document.getElementById('confirmEliminarModalBody');
+        if (body) body.textContent = `¿Estás seguro de que deseas eliminar a ${nombre}? Esta acción no se puede deshacer.`;
+        const modal = new bootstrap.Modal(document.getElementById('confirmEliminarModal'));
+        modal.show();
     }
 
     /**
@@ -401,6 +520,9 @@
     // Variables temporales para asignación
     let atletaAsignarId = null;
     let atletaAsignarNombre = null;
+    // Variables temporales para eliminación
+    let atletaEliminarId = null;
+    let atletaEliminarNombre = null;
 
     function asignarAtleta(atletaId, nombreAtleta) {
         atletaAsignarId = atletaId;
@@ -434,6 +556,25 @@
                 atletaAsignarNombre = null;
             });
         }
+        const btnConfirmEliminar = document.getElementById('btnConfirmEliminar');
+        if (btnConfirmEliminar) {
+            btnConfirmEliminar.addEventListener('click', function() {
+                if (atletaEliminarId && atletaEliminarNombre) {
+                    if (eliminarAtleta(atletaEliminarId)) {
+                        showToastAtletas(`${atletaEliminarNombre} ha sido eliminado exitosamente`, 'success', 'Atleta eliminado');
+                        cargarAtletas();
+                    } else {
+                        showToastAtletas('Error al eliminar atleta. Intenta de nuevo.', 'error');
+                    }
+                }
+                // Cerrar el modal
+                const modalEl = document.getElementById('confirmEliminarModal');
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+                atletaEliminarId = null;
+                atletaEliminarNombre = null;
+            });
+        }
     });
 
     /**
@@ -446,6 +587,10 @@
             atleta.email.toLowerCase().includes(termino_lower)
         );
         renderizarTabla(filtrados);
+        // También actualizar la vista de tarjetas en móvil
+        if (typeof renderizarTarjetas === 'function') {
+            renderizarTarjetas(filtrados);
+        }
     }
 
     // ==================== EVENT LISTENERS ====================
