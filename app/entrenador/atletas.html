@@ -40,13 +40,74 @@
         <!-- CONTENIDO PRINCIPAL -->
         <main class="main-content">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5>Atleta</h5>
-                <button class="btn btn-custom-primary d-none d-lg-block"><i class="bi bi-plus-lg me-1"></i> Nuevo Plan</button>
+                <h5>Atletas</h5>
+                <button class="btn btn-custom-primary d-none d-lg-block" id="btnNuevoAtleta"><i class="bi bi-plus-lg me-1"></i> Nuevo Atleta</button>
             </div>
 
-            
+            <!-- Búsqueda y filtros -->
+            <div class="mb-4">
+                <input type="text" class="form-control" id="inputBuscar" placeholder="Buscar por nombre o email...">
+            </div>
+
+            <!-- Tabla de atletas -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Estado</th>
+                            <th>Fecha de Creación</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="atletasTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Cargando atletas...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
+
+    <!-- Modal crear/editar atleta -->
+    <div class="modal fade" id="atletaModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="atletaModalTitle">Nuevo Atleta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="atletaForm">
+                        <div class="mb-3">
+                            <label for="atletaNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="atletaNombre" placeholder="Ej: Juan Pérez" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="atletaEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="atletaEmail" placeholder="Ej: juan@mail.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="atletaContrasena" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="atletaContrasena" placeholder="••••••••" required>
+                            <small class="text-muted d-block mt-1">El atleta usará esto para loguearse</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="btnGuardarAtleta">Guardar Atleta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante para móvil -->
+    <button class="btn btn-custom-primary d-lg-none" id="btnNuevoAtletaMobile" style="position: fixed; bottom: 2rem; right: 2rem; z-index: 50;">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -55,6 +116,214 @@
     </script>
 <script src="../js/estructura.js"></script>
 <script src="../js/session.js"></script>
+
+<script>
+    // ==================== VARIABLES GLOBALES ====================
+    let atletaEditandoId = null;
+    let usuarioLogueado = null;
+    let atletasActuales = [];
+
+    // ==================== INICIALIZACIÓN ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        usuarioLogueado = getCurrentUser();
+        
+        if (!usuarioLogueado || usuarioLogueado.userType !== 'entrenador') {
+            console.error('Acceso denegado: no eres entrenador');
+            window.location.href = '../index.html';
+            return;
+        }
+        
+        cargarAtletas();
+        setupEventListeners();
+    });
+
+    // ==================== FUNCIONES CRUD ====================
+
+    /**
+     * Cargar y mostrar atletas del entrenador
+     */
+    function cargarAtletas() {
+        atletasActuales = getAtletasDelEntrenador(usuarioLogueado.id);
+        renderizarTabla(atletasActuales);
+    }
+
+    /**
+     * Renderizar tabla de atletas
+     * @param {Array} atletas - Array de atletas a mostrar
+     */
+    function renderizarTabla(atletas) {
+        const tbody = document.getElementById('atletasTableBody');
+        
+        if (atletas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">No hay atletas registrados</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = atletas.map(atleta => {
+            const fechaCreacion = new Date(atleta.createdAt).toLocaleDateString('es-AR');
+            const nombreCompleto = atleta.nombre + (atleta.apellido ? ' ' + atleta.apellido : '');
+            const sinAsignar = atleta.atleta?.entrenadorId === null;
+            
+            return `
+                <tr>
+                    <td><strong>${nombreCompleto}</strong></td>
+                    <td>${atleta.email}</td>
+                    <td>
+                        ${sinAsignar ? 
+                            '<span class="badge bg-warning text-dark">Sin asignar</span>' : 
+                            '<span class="badge bg-success">Asignado</span>'}
+                    </td>
+                    <td>${fechaCreacion}</td>
+                    <td>
+                        ${sinAsignar ? 
+                            `<button class="btn btn-sm btn-success me-2" onclick="asignarAtleta('${atleta.id}', '${nombreCompleto}')">
+                                <i class="bi bi-check-lg"></i> Asignarme
+                            </button>` : 
+                            ''}
+                        <button class="btn btn-sm btn-outline-primary me-2" onclick="abrirModalEditar('${atleta.id}')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="confirmarEliminar('${atleta.id}', '${nombreCompleto}')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    /**
+     * Abrir modal para crear nuevo atleta
+     */
+    function abrirModalNuevo() {
+        atletaEditandoId = null;
+        document.getElementById('atletaForm').reset();
+        document.getElementById('atletaModalTitle').textContent = 'Nuevo Atleta';
+        document.getElementById('atletaContrasena').required = true;
+        new bootstrap.Modal(document.getElementById('atletaModal')).show();
+    }
+
+    /**
+     * Abrir modal para editar atleta existente
+     */
+    function abrirModalEditar(atletaId) {
+        const atleta = getAtletaById(atletaId);
+        if (!atleta) {
+            alert('Atleta no encontrado');
+            return;
+        }
+
+        atletaEditandoId = atletaId;
+        document.getElementById('atletaNombre').value = atleta.nombre;
+        document.getElementById('atletaEmail').value = atleta.email;
+        document.getElementById('atletaContrasena').value = atleta.password;
+        document.getElementById('atletaModalTitle').textContent = 'Editar Atleta';
+        document.getElementById('atletaContrasena').required = false;
+        new bootstrap.Modal(document.getElementById('atletaModal')).show();
+    }
+
+    /**
+     * Guardar atleta (crear o actualizar)
+     */
+    function guardarAtleta() {
+        const nombre = document.getElementById('atletaNombre').value.trim();
+        const email = document.getElementById('atletaEmail').value.trim();
+        const contrasena = document.getElementById('atletaContrasena').value;
+        
+        if (!nombre || !email || !contrasena) {
+            alert('Completa todos los campos');
+            return;
+        }
+
+        let resultado = false;
+
+        if (atletaEditandoId) {
+            // Modo edición
+            resultado = actualizarAtleta(atletaEditandoId, {
+                nombre: nombre,
+                email: email,
+                password: contrasena
+            });
+        } else {
+            // Modo creación
+            resultado = crearAtletaConUsuario(nombre, email, contrasena, usuarioLogueado.id) !== null;
+        }
+
+        if (resultado) {
+            alert(atletaEditandoId ? 'Atleta actualizado' : 'Atleta creado exitosamente');
+            bootstrap.Modal.getInstance(document.getElementById('atletaModal')).hide();
+            cargarAtletas();
+        } else {
+            alert('Error: el email ya existe o hubo un problema');
+        }
+    }
+
+    /**
+     * Confirmar eliminación de atleta
+     */
+    function confirmarEliminar(atletaId, nombre) {
+        if (confirm(`¿Estás seguro de que deseas eliminar a ${nombre}? Esta acción no se puede deshacer.`)) {
+            if (eliminarAtleta(atletaId)) {
+                alert('Atleta eliminado exitosamente');
+                cargarAtletas();
+            } else {
+                alert('Error al eliminar atleta');
+            }
+        }
+    }
+
+    /**
+     * Asignar un atleta sin entrenador al entrenador actual
+     */
+    function asignarAtleta(atletaId, nombreAtleta) {
+        if (confirm(`¿Deseas asignar a ${nombreAtleta} como tu atleta?`)) {
+            if (asignarAtletaAEntrenador(atletaId, usuarioLogueado.id)) {
+                alert('Atleta asignado exitosamente');
+                cargarAtletas();
+            } else {
+                alert('Error al asignar atleta. Puede que ya tenga un entrenador asignado.');
+            }
+        }
+    }
+
+    /**
+     * Filtrar tabla por búsqueda
+     */
+    function filtrarAtletas(termino) {
+        const termino_lower = termino.toLowerCase();
+        const filtrados = atletasActuales.filter(atleta => 
+            atleta.nombre.toLowerCase().includes(termino_lower) ||
+            atleta.email.toLowerCase().includes(termino_lower)
+        );
+        renderizarTabla(filtrados);
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function setupEventListeners() {
+        // Botones de nuevo atleta
+        document.getElementById('btnNuevoAtleta').addEventListener('click', abrirModalNuevo);
+        const btnMobile = document.getElementById('btnNuevoAtletaMobile');
+        if (btnMobile) {
+            btnMobile.addEventListener('click', abrirModalNuevo);
+        }
+
+        // Botón guardar atleta
+        document.getElementById('btnGuardarAtleta').addEventListener('click', guardarAtleta);
+
+        // Input de búsqueda
+        document.getElementById('inputBuscar').addEventListener('input', (e) => {
+            filtrarAtletas(e.target.value);
+        });
+
+        // Permitir guardar con Enter en el formulario
+        document.getElementById('atletaForm').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                guardarAtleta();
+            }
+        });
+    }
+</script>
 </body>
 </html>
 

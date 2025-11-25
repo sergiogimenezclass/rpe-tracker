@@ -1,5 +1,43 @@
 const SESION_KEY = "rpe-tracker-current-user";
 
+// ==================== FUNCIONES HELPER PARA LOCALSTORAGE ====================
+
+/**
+ * Obtiene todos los usuarios desde localStorage
+ * @returns {Array} Array de usuarios o array vacío si no existen
+ */
+function getUsers() {
+    const users = localStorage.getItem('rpe-tracker-users');
+    return users ? JSON.parse(users) : [];
+}
+
+/**
+ * Guarda el array de usuarios en localStorage
+ * @param {Array} users - Array de usuarios a guardar
+ */
+function saveUsers(users) {
+    localStorage.setItem('rpe-tracker-users', JSON.stringify(users));
+}
+
+/**
+ * Obtiene el usuario actualmente autenticado desde sessionStorage
+ * @returns {Object|null} Usuario actual o null si no hay sesión
+ */
+function getCurrentUser() {
+    const user = sessionStorage.getItem(SESION_KEY);
+    return user ? JSON.parse(user) : null;
+}
+
+/**
+ * Guarda el usuario actual en sessionStorage
+ * @param {Object} user - Usuario a guardar como usuario actual
+ */
+function setCurrentUser(user) {
+    sessionStorage.setItem(SESION_KEY, JSON.stringify(user));
+}
+
+// ==================== FUNCIÓN DE ACTUALIZACIÓN DE NOMBRE ====================
+
 let updateUserName = function () {
 
     // Usamos la constante global SESION_KEY definida arriba
@@ -128,3 +166,197 @@ window.addEventListener('fragment:ready', () => {
 document.addEventListener('DOMContentLoaded', () => {
     attachLogoutListener();
 });
+
+// ==================== FUNCIONES CRUD DE ATLETAS ====================
+
+/**
+ * Genera un ID único para el usuario
+ * @returns {string} ID único generado
+ */
+function generateUserId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+/**
+ * Crea los datos por defecto para un atleta
+ * @returns {Object} Objeto con los datos por defecto de atleta
+ */
+function createDefaultAtletaData() {
+    return {
+        telefono: null,
+        nivel: null,
+        entrenadorId: null,
+        estadisticas: {
+            rpePromedio: null,
+            duracionPromedioSesion: null,
+            volumen: null,
+            frecuencia: null
+        },
+        notificaciones: {
+            email: true,
+            aplicacion: true
+        },
+        privacidad: {
+            perfilPublico: false,
+            compartirStats: false
+        },
+        sesiones: []
+    };
+}
+
+/**
+ * Crea un atleta y su usuario asociado en localStorage
+ * Estructura IGUAL a la que usa el registro en index.html
+ * @param {string} nombre - Nombre del atleta
+ * @param {string} email - Email único
+ * @param {string} contrasena - Contraseña del atleta
+ * @param {string} entrenadorId - ID del entrenador propietario
+ * @returns {Object|null} Atleta creado o null si hay error
+ */
+function crearAtletaConUsuario(nombre, email, contrasena, entrenadorId) {
+    const users = getUsers();
+    
+    // Validar email único
+    if (users.find(u => u.email === email.toLowerCase())) {
+        console.error('Email ya existe:', email);
+        return null;
+    }
+    
+    // Crear usuario del atleta con ESTRUCTURA CONSISTENTE
+    const userId = generateUserId();
+    const defaultData = createDefaultAtletaData();
+    defaultData.entrenadorId = entrenadorId; // Establecer el entrenador propietario
+    
+    const nuevoAtleta = {
+        id: userId,
+        email: email.toLowerCase(),
+        password: contrasena,
+        userType: 'atleta',
+        createdAt: new Date().toISOString(),
+        nombre: nombre,
+        apellido: '', // campo consistente con estructura de registro
+        atleta: defaultData // datos específicos de atleta
+    };
+    
+    users.push(nuevoAtleta);
+    saveUsers(users);
+    
+    console.log('Atleta creado:', nuevoAtleta.nombre);
+    return nuevoAtleta;
+}
+
+/**
+ * Obtener atletas del entrenador actual
+ * Incluye: atletas asignados + atletas sin asignar (entrenadorId === null)
+ * @param {string} entrenadorId - ID del entrenador
+ * @returns {Array} Lista de atletas
+ */
+function getAtletasDelEntrenador(entrenadorId) {
+    const users = getUsers();
+    return users.filter(u => {
+        // Buscar usuarios que sean atletas
+        if (u.userType !== 'atleta') return false;
+        
+        if (!u.atleta) return false;
+        
+        // Incluir: atletas ya asignados a este entrenador O atletas sin asignar
+        return (u.atleta.entrenadorId === entrenadorId) || 
+               (u.atleta.entrenadorId === null);
+    });
+}
+
+/**
+ * Actualizar atleta existente
+ * @param {string} atletaId - ID del atleta
+ * @param {Object} updates - Campos a actualizar (nombre, email, password)
+ * @returns {boolean} true si se actualizó, false si no se encontró
+ */
+function actualizarAtleta(atletaId, updates) {
+    const users = getUsers();
+    const userIndex = users.findIndex(u => u.id === atletaId);
+    
+    if (userIndex === -1) {
+        console.error('Atleta no encontrado:', atletaId);
+        return false;
+    }
+    
+    // Actualizar solo campos permitidos del usuario
+    if (updates.nombre) users[userIndex].nombre = updates.nombre;
+    if (updates.email) users[userIndex].email = updates.email.toLowerCase();
+    if (updates.password) users[userIndex].password = updates.password;
+    
+    saveUsers(users);
+    console.log('Atleta actualizado:', atletaId);
+    return true;
+}
+
+/**
+ * Eliminar atleta (y su usuario)
+ * @param {string} atletaId - ID del atleta
+ * @returns {boolean} true si se eliminó, false si no se encontró
+ */
+function eliminarAtleta(atletaId) {
+    const users = getUsers();
+    const initialLength = users.length;
+    const filtered = users.filter(u => u.id !== atletaId);
+    
+    if (filtered.length === initialLength) {
+        console.error('Atleta no encontrado para eliminar:', atletaId);
+        return false;
+    }
+    
+    saveUsers(filtered);
+    console.log('Atleta eliminado:', atletaId);
+    return true;
+}
+
+/**
+ * Obtener un atleta por ID
+ * @param {string} atletaId - ID del atleta
+ * @returns {Object|null} Atleta encontrado o null
+ */
+function getAtletaById(atletaId) {
+    const users = getUsers();
+    return users.find(u => u.id === atletaId) || null;
+}
+
+/**
+ * Asignar un atleta sin entrenador a un entrenador específico
+ * @param {string} atletaId - ID del atleta
+ * @param {string} entrenadorId - ID del entrenador
+ * @returns {boolean} true si se asignó correctamente, false si ya tiene entrenador o no existe
+ */
+function asignarAtletaAEntrenador(atletaId, entrenadorId) {
+    const users = getUsers();
+    const atletaIndex = users.findIndex(u => u.id === atletaId);
+    
+    if (atletaIndex === -1) {
+        console.error('Atleta no encontrado:', atletaId);
+        return false;
+    }
+    
+    const atleta = users[atletaIndex];
+    
+    if (atleta.userType !== 'atleta') {
+        console.error('El usuario no es un atleta:', atletaId);
+        return false;
+    }
+    
+    if (!atleta.atleta) {
+        console.error('Estructura de atleta incompleta:', atletaId);
+        return false;
+    }
+    
+    // Verificar que el atleta no tenga entrenador asignado
+    if (atleta.atleta.entrenadorId !== null) {
+        console.warn('Atleta ya tiene entrenador asignado:', atletaId);
+        return false;
+    }
+    
+    // Asignar el entrenador
+    atleta.atleta.entrenadorId = entrenadorId;
+    saveUsers(users);
+    
+    console.log('Atleta asignado al entrenador:', { atletaId, entrenadorId });
+    return true;
+}
