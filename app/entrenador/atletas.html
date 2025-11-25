@@ -117,11 +117,105 @@
 <script src="../js/estructura.js"></script>
 <script src="../js/session.js"></script>
 
+    <!-- Contenedor para Toasts (misma configuración que login) -->
+    <div class="toast-container top-0 start-50 translate-middle-x" style="z-index: 9999;">
+        <div id="toastNotification" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto" id="toastTitle">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Mensaje aquí
+            </div>
+        </div>
+    </div>
+
 <script>
     // ==================== VARIABLES GLOBALES ====================
     let atletaEditandoId = null;
     let usuarioLogueado = null;
     let atletasActuales = [];
+
+    // ==================== FUNCIÓN PARA MOSTRAR TOASTS (igual que login) ====================
+    /**
+     * Muestra un toast de Bootstrap
+     * @param {string} message - Mensaje a mostrar
+     * @param {string} type - Tipo: 'success', 'error', 'warning', 'info'
+     * @param {string} title - Título opcional
+     */
+    function showToastAtletas(message, type = 'info', title = null) {
+        // Verificar que Bootstrap esté cargado
+        if (typeof bootstrap === 'undefined') {
+            console.error('Bootstrap no está cargado. Usando alert como fallback.');
+            alert(message);
+            return;
+        }
+
+        const toastEl = document.getElementById('toastNotification');
+        const toastTitleEl = document.getElementById('toastTitle');
+        const toastMessageEl = document.getElementById('toastMessage');
+
+        if (!toastEl || !toastTitleEl || !toastMessageEl) {
+            console.error('Elementos del toast no encontrados. Usando alert como fallback.');
+            alert(message);
+            return;
+        }
+
+        // Configurar título
+        if (title) {
+            toastTitleEl.textContent = title;
+        } else {
+            // Títulos por defecto según el tipo
+            const titles = {
+                'success': 'Éxito',
+                'error': 'Error',
+                'warning': 'Advertencia',
+                'info': 'Información'
+            };
+            toastTitleEl.textContent = titles[type] || 'Notificación';
+        }
+
+        // Configurar mensaje
+        toastMessageEl.textContent = message;
+
+        // Configurar colores según el tipo
+        const toastHeader = toastEl.querySelector('.toast-header');
+        const toastBody = toastEl.querySelector('.toast-body');
+
+    // Remover clases de color previas
+    toastHeader.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'text-white', 'text-dark');
+    toastBody.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info');
+
+    // Asegurar que el título del toast no quede en blanco por estilos heredados
+    // (forzamos la clase de color correspondiente sobre el elemento del título)
+    toastTitleEl.classList.remove('text-white', 'text-dark');
+
+        // Agregar clases según el tipo
+        if (type === 'success') {
+            toastHeader.classList.add('bg-success', 'text-dark');
+            toastBody.classList.add('bg-success', 'bg-opacity-10');
+            toastTitleEl.classList.add('text-dark');
+        } else if (type === 'error') {
+            toastHeader.classList.add('bg-danger', 'text-white');
+            toastBody.classList.add('bg-danger', 'bg-opacity-10');
+            toastTitleEl.classList.add('text-white');
+        } else if (type === 'warning') {
+            toastHeader.classList.add('bg-warning', 'text-dark');
+            toastBody.classList.add('bg-warning', 'bg-opacity-10');
+            toastTitleEl.classList.add('text-dark');
+        } else {
+            toastHeader.classList.add('bg-info', 'text-white');
+            toastBody.classList.add('bg-info', 'bg-opacity-10');
+            toastTitleEl.classList.add('text-white');
+        }
+
+        // Mostrar el toast
+        const toast = new bootstrap.Toast(toastEl, {
+            autohide: true,
+            delay: type === 'error' ? 5000 : 3000 // Errores se muestran más tiempo
+        });
+        toast.show();
+    }
 
     // ==================== INICIALIZACIÓN ====================
     document.addEventListener('DOMContentLoaded', function() {
@@ -231,7 +325,7 @@
         const contrasena = document.getElementById('atletaContrasena').value;
         
         if (!nombre || !email || !contrasena) {
-            alert('Completa todos los campos');
+            showToastAtletas('Completa todos los campos requeridos', 'warning');
             return;
         }
 
@@ -250,11 +344,15 @@
         }
 
         if (resultado) {
-            alert(atletaEditandoId ? 'Atleta actualizado' : 'Atleta creado exitosamente');
+            showToastAtletas(
+                atletaEditandoId ? 'Atleta actualizado correctamente' : 'Atleta creado exitosamente',
+                'success',
+                atletaEditandoId ? 'Actualización completada' : 'Atleta creado'
+            );
             bootstrap.Modal.getInstance(document.getElementById('atletaModal')).hide();
             cargarAtletas();
         } else {
-            alert('Error: el email ya existe o hubo un problema');
+            showToastAtletas('Error: el email ya existe o hubo un problema', 'error');
         }
     }
 
@@ -264,10 +362,10 @@
     function confirmarEliminar(atletaId, nombre) {
         if (confirm(`¿Estás seguro de que deseas eliminar a ${nombre}? Esta acción no se puede deshacer.`)) {
             if (eliminarAtleta(atletaId)) {
-                alert('Atleta eliminado exitosamente');
+                showToastAtletas(`${nombre} ha sido eliminado exitosamente`, 'success', 'Atleta eliminado');
                 cargarAtletas();
             } else {
-                alert('Error al eliminar atleta');
+                showToastAtletas('Error al eliminar atleta. Intenta de nuevo.', 'error');
             }
         }
     }
@@ -278,10 +376,10 @@
     function asignarAtleta(atletaId, nombreAtleta) {
         if (confirm(`¿Deseas asignar a ${nombreAtleta} como tu atleta?`)) {
             if (asignarAtletaAEntrenador(atletaId, usuarioLogueado.id)) {
-                alert('Atleta asignado exitosamente');
+                showToastAtletas(`${nombreAtleta} ha sido asignado a tu cuenta`, 'success', 'Asignación completada');
                 cargarAtletas();
             } else {
-                alert('Error al asignar atleta. Puede que ya tenga un entrenador asignado.');
+                showToastAtletas('Error al asignar atleta. Puede que ya tenga un entrenador asignado.', 'error');
             }
         }
     }
